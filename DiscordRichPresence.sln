@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordRichPresence", "DiscordRichPresence\DiscordRichPresence.csproj", "{BAA11C80-5577-44A4-8CF7-B8948D9A2700}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord", "Discord\Discord.csproj", "{0469C2EC-117E-4D16-B6D8-487ACE8A715E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BAA11C80-5577-44A4-8CF7-B8948D9A2700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BAA11C80-5577-44A4-8CF7-B8948D9A2700}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BAA11C80-5577-44A4-8CF7-B8948D9A2700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BAA11C80-5577-44A4-8CF7-B8948D9A2700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0469C2EC-117E-4D16-B6D8-487ACE8A715E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0469C2EC-117E-4D16-B6D8-487ACE8A715E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0469C2EC-117E-4D16-B6D8-487ACE8A715E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0469C2EC-117E-4D16-B6D8-487ACE8A715E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A8E7D38A-F2CC-4DC4-93E7-CC412C76E259}
+		SolutionGuid = {76E9C473-DE28-4C0A-B5B7-5FD5CB493CFE}
 	EndGlobalSection
 EndGlobal
