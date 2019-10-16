@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Discord\DiscordRichPresence.csproj">
+    <ProjectReference Include="..\DiscordRichPresence\DiscordRichPresence.csproj">
       <Project>{0469c2ec-117e-4d16-b6d8-487ace8a715e}</Project>
       <Name>DiscordRichPresence</Name>
     </ProjectReference>
