@@ -1,0 +1,11 @@
+﻿namespace DiscordRichPresence.Net
+{
+    public enum DiscordFrameType
+    {
+        HandShake = 0,
+        Frame = 1,
+        Close = 2,
+        Ping = 3,
+        Pong = 4
+    }
+}
