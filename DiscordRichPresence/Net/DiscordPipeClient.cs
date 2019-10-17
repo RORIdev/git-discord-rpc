@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DiscordRichPresence.Net.Entities;
 using DiscordRichPresence.Net.EventArgs;
+using Newtonsoft.Json.Linq;
 
 namespace DiscordRichPresence.Net
 {
@@ -132,13 +133,10 @@ namespace DiscordRichPresence.Net
             if (this.Pipe == null || !this.Pipe.IsConnected)
                 return;
 
-            var frame = new DiscordFrame()
+            var result = new DiscordFrame()
                 .WithType(type)
-                .WithPayload(payload);
-
-            var result = frame.GetBytes();
-
-            Debug.WriteLine("[DISCORD-IPC] SendAsync(): >>: {0}", args: frame.GetJson());
+                .WithPayload(payload)
+                .GetBytes();
 
             await this.Pipe.WriteAsync(result, 0, result.Length);
         }
@@ -148,16 +146,13 @@ namespace DiscordRichPresence.Net
             if (this.Pipe == null || !this.Pipe.IsConnected)
                 return;
 
-            var frame = new DiscordFrame()
+            var result = new DiscordFrame()
                 .WithType(type)
-                .WithPayload(command);
+                .WithPayload(command)
+                .GetBytes();
 
             if (callback != null)
                 this.Callbacks.AddOrUpdate(command.Nonce, callback, (key, old) => callback);
-
-            var result = frame.GetBytes();
-
-            Debug.WriteLine("[DISCORD-IPC] SendCommandAsync(): >>: {0}", args: frame.GetJson());
 
             await this.Pipe.WriteAsync(result, 0, result.Length);
         }
@@ -171,11 +166,34 @@ namespace DiscordRichPresence.Net
                 case DiscordCommandType.Dispatch:
                     await this.HandleEventAsync(frame, payload);
                     break;
-
-                default:
-                    Debug.WriteLine("[DISCORD-IPC] HandleFrameAsync(): Command not implemented: {0}", args: payload.Command);
-                    break;
             }
+        }
+
+        public Task SetActivityAsync(Action<DiscordActivity> activity)
+        {
+            var model = new DiscordActivity();
+            activity(model);
+            return SetActivityAsync(model, null);
+        }
+
+        public async Task SetActivityAsync(DiscordActivity activity, int? pid = null)
+        {
+            var command = new DiscordCommand()
+            {
+                Command = DiscordCommandType.SetActivity,
+                Arguments = JObject.FromObject(new
+                {
+                    pid = pid.GetValueOrDefault(Process.GetCurrentProcess().Id),
+                    activity
+                })
+            };
+
+            var result = new DiscordFrame()
+                .WithType(DiscordFrameType.Frame)
+                .WithPayload(command)
+                .GetBytes();
+
+            await this.Pipe.WriteAsync(result, 0, result.Length);
         }
 
         protected async Task HandleEventAsync(DiscordFrame frame, DiscordCommand command)
@@ -184,14 +202,14 @@ namespace DiscordRichPresence.Net
             {
                 case DiscordEventType.Ready:
                 {
-                    var e = command.Data.ToObject<ReadyEventArgs>();
-                    e.Client = this;
+                    var ready = command.Data.ToObject<ReadyEventArgs>();
+                    ready.Client = this;
 
-                    this.Environment = e.Configuration;
-                    this.RpcVersion = e.Version;
-                    this.CurrentUser = e.User;
+                    this.Environment = ready.Configuration;
+                    this.RpcVersion = ready.Version;
+                    this.CurrentUser = ready.User;
 
-                    await this.Ready?.Invoke(e);
+                    await this.Ready?.Invoke(ready);
                 }
                 break;
             }

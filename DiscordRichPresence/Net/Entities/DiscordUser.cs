@@ -34,6 +34,12 @@ namespace DiscordRichPresence.Net.Entities
         [JsonProperty("bot")]
         public bool IsBot { get; internal set; } = false;
 
+        [JsonProperty("flags")]
+        public DiscordUserType Type { get; internal set; } = DiscordUserType.None;
+
+        [JsonProperty("premium_type")]
+        public PremiumType PremiumType { get; internal set; } = PremiumType.None;
+
         public override string ToString()
         {
             return $"DiscordUser ({this.Username}#{this.Discriminator})";

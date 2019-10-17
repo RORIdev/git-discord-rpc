@@ -15,15 +15,15 @@ namespace DiscordRichPresence.Net
         public DiscordCommandType Command { get; internal set; }
 
         [JsonProperty("args", NullValueHandling = NullValueHandling.Ignore)]
-        public JObject Arguments { get; internal set; }
+        public JObject Arguments { get; internal set; } = null;
 
         [JsonProperty("nonce")]
         public string Nonce { get; internal set; } = Guid.NewGuid().ToString();
 
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-        public JObject Data { get; internal set; }
+        public JObject Data { get; internal set; } = null;
 
         [JsonProperty("evt", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(StringEnumConverter))]
-        public DiscordEventType Event { get; internal set; }
+        public DiscordEventType? Event { get; internal set; } = null;
     }
 }
