@@ -35,6 +35,24 @@ namespace DiscordRichPresence.Entities
         }
 
         /// <summary>
+        /// Procurar nos assets uma extensão suportada.
+        /// </summary>
+        /// <param name="extension">Extensão que será buscada.</param>
+        /// <returns>Asset que corresponde a pesquisa; Nulo se não foi encontrado.</returns>
+        public DiscordAsset FindAsset(string extension)
+        {
+            lock (this.Assets)
+            {
+                var index = this.Assets.FindIndex(x => x.SupportExtension(extension));
+
+                if (index == -1)
+                    return null;
+
+                return this.Assets[index];
+            }
+        }
+
+        /// <summary>
         /// Adiciona um asset a lista.
         /// </summary>
         /// <param name="asset">Asset que será adicionado.</param>

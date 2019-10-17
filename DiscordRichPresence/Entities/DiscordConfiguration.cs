@@ -24,21 +24,15 @@ namespace DiscordRichPresence.Entities
         public int CurrentInstanceId { get; set; } = 0;
 
         /// <summary>
-        /// Determina se irá mostrar o tempo decorrido. Padrão: Sim
-        /// </summary>
-        [JsonProperty("display_timestamp")]
-        public bool DisplayTimestamp { get; set; } = true;
-
-        /// <summary>
         /// Determina se irá mostrar o nome do projeto ao invés da solução. Padrão: Não.
         /// </summary>
-        [JsonProperty("display_project")]
+        [JsonProperty("display_project_name")]
         public bool DisplayProject { get; set; } = false;
 
         /// <summary>
         /// Determina se irá mostrar o nome da solução. Padrão: Sim
         /// </summary>
-        [JsonProperty("display_solution")]
+        [JsonProperty("display_solution_name")]
         public bool DisplaySolution { get; set; } = true;
 
         /// <summary>
@@ -46,5 +40,11 @@ namespace DiscordRichPresence.Entities
         /// </summary>
         [JsonProperty("auto_reset_timestamp")]
         public bool AutoResetTimestamp { get; set; } = false;
+
+        /// <summary>
+        /// Determina se irá mostrar o tempo decorrido. Padrão: Sim
+        /// </summary>
+        [JsonProperty("display_timestamp")]
+        public bool DisplayTimestamp { get; set; } = true;
     }
 }

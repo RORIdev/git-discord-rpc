@@ -53,23 +53,28 @@ namespace DiscordRichPresence.Pipe
                 if (this.Pipe.IsConnected)
                     return;
 
-            this.Pipe = new NamedPipeClientStream(".", $"discord-ipc-{this.InstanceId}", PipeDirection.InOut);
+            this.Pipe = new NamedPipeClientStream(".", $"discord-ipc-{this.InstanceId}", PipeDirection.InOut, PipeOptions.Asynchronous | PipeOptions.WriteThrough);
 
             try
             {
-                await this.Pipe.ConnectAsync();
-                await Task.Delay(2500);
+                await this.Pipe.ConnectAsync().ConfigureAwait(false);
+                await Task.Delay(2500).ConfigureAwait(false);
 
                 if (!this.Pipe.IsConnected)
                     throw new InvalidOperationException("Pipe is not connected.");
 
-                _ = Task.Run(this.InitializeAsync);
-                await this.Connected?.Invoke();
+                _ = Task.Run(async () =>
+                {
+                    await this.SendAsync(DiscordFrameType.Handshake, new DiscordHandshake { ClientId = this.ApplicationId }).ConfigureAwait(false);
+                    await this.ReadPipeAsync();
+                });
+
+                this.Connected?.Invoke();
             }
             catch (Exception ex)
             {
                 await this.Errored?.Invoke(ex);
-                await this.CloseAsync();
+                await this.CloseAsync().ConfigureAwait(false);
             }
         }
 
@@ -89,12 +94,6 @@ namespace DiscordRichPresence.Pipe
             await this.Disconnected?.Invoke();
         }
 
-        async Task InitializeAsync()
-        {
-            await this.SendAsync(DiscordFrameType.Handshake, new DiscordHandshake { ClientId = this.ApplicationId });
-            await this.ReadPipeAsync();
-        }
-
         async Task ReadPipeAsync()
         {
             while (this.Pipe != null && this.Pipe.IsConnected)
@@ -103,7 +102,7 @@ namespace DiscordRichPresence.Pipe
                 {
                     var raw = new byte[this.Pipe.InBufferSize];
 
-                    if (await this.Pipe.ReadAsync(raw, 0, raw.Length) > 0)
+                    if (await this.Pipe.ReadAsync(raw, 0, raw.Length).ConfigureAwait(false) > 0)
                     {
                         var frame = new DiscordFrame(raw);
 
@@ -126,7 +125,7 @@ namespace DiscordRichPresence.Pipe
                 catch (Exception ex)
                 {
                     await this.Errored?.Invoke(ex);
-                    await this.CloseAsync();
+                    await this.CloseAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -141,7 +140,7 @@ namespace DiscordRichPresence.Pipe
                 .WithPayload(payload)
                 .GetBytes();
 
-            await this.Pipe.WriteAsync(result, 0, result.Length);
+            await this.Pipe.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
         }
 
         internal async Task SendCommandAsync(DiscordFrameType type, DiscordCommand command, DiscordCommandCallback callback = null)
@@ -157,7 +156,7 @@ namespace DiscordRichPresence.Pipe
             if (callback != null)
                 this.Callbacks.AddOrUpdate(command.Nonce, callback, (key, old) => callback);
 
-            await this.Pipe.WriteAsync(result, 0, result.Length);
+            await this.Pipe.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
         }
 
         internal async Task HandleFrameAsync(DiscordFrame frame)
@@ -176,7 +175,7 @@ namespace DiscordRichPresence.Pipe
             switch (payload.Command)
             {
                 case DiscordCommandType.Dispatch:
-                    await this.HandleEventAsync(frame, payload);
+                    await this.HandleEventAsync(frame, payload).ConfigureAwait(false);
                     break;
             }
         }
@@ -205,7 +204,7 @@ namespace DiscordRichPresence.Pipe
                 .WithPayload(command)
                 .GetBytes();
 
-            await this.Pipe.WriteAsync(result, 0, result.Length);
+            await this.Pipe.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
         }
 
         protected async Task HandleEventAsync(DiscordFrame frame, DiscordCommand command)
@@ -214,14 +213,17 @@ namespace DiscordRichPresence.Pipe
             {
                 case DiscordEventType.Ready:
                 {
-                    var ready = command.Data.ToObject<ReadyEventArgs>();
-                    ready.Client = this;
+                    var e = command.Data.ToObject<ReadyEventArgs>();
+                    e.Client = this;
 
-                    this.Environment = ready.Configuration;
-                    this.RpcVersion = ready.Version;
-                    this.CurrentUser = ready.User;
+                    this.Environment = e.Configuration;
+                    this.RpcVersion = e.Version;
+                    this.CurrentUser = e.User;
 
-                    await this.Ready?.Invoke(ready);
+                    var handler = this.Ready;
+
+                    if (handler != null)
+                        await handler.Invoke(e).ConfigureAwait(false);
                 }
                 break;
             }
