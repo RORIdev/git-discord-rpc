@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DiscordRichPresence.Net;
-using DiscordRichPresence.Net.Entities;
+using DiscordRichPresence.Pipe;
+using DiscordRichPresence.Pipe.Entities;
 
 namespace DiscordRichPresence.Test
 {
@@ -12,7 +12,7 @@ namespace DiscordRichPresence.Test
     {
         static async Task Main(string[] args)
         {
-            var client = new DiscordPipeClient(421688819868237824);
+            var client = new DiscordPipeClient(0, 421688819868237824);
 
             client.Connected += () =>
             {
@@ -62,7 +62,7 @@ namespace DiscordRichPresence.Test
                 });
             };
 
-            await client.ConnectAsync(0);
+            await client.ConnectAsync();
 
             while(true)
             {

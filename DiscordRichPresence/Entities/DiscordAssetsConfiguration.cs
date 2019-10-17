@@ -3,13 +3,22 @@ using Newtonsoft.Json;
 
 namespace DiscordRichPresence.Entities
 {
-    public class RichPresenceConfiguration
+    public class DiscordAssetsConfiguration
     {
-        [JsonProperty("assets")]
-        protected List<RichPresenceAsset> Assets { get; set; } = new List<RichPresenceAsset>();
-
         [JsonIgnore]
-        public RichPresenceAsset DefaultAsset
+        public static readonly DiscordAssetsConfiguration Empty = new DiscordAssetsConfiguration();
+
+        /// <summary>
+        /// Lista com todos os assets carregados da configuração.
+        /// </summary>
+        [JsonProperty("assets")]
+        protected List<DiscordAsset> Assets { get; set; } = new List<DiscordAsset>();
+
+        /// <summary>
+        /// Indica o asset padrão, quando houver um tipo de arquivo desconhecido.
+        /// </summary>
+        [JsonIgnore]
+        public DiscordAsset DefaultAsset
         {
             get
             {
@@ -25,7 +34,11 @@ namespace DiscordRichPresence.Entities
             }
         }
 
-        public void Add(RichPresenceAsset asset)
+        /// <summary>
+        /// Adiciona um asset a lista.
+        /// </summary>
+        /// <param name="asset">Asset que será adicionado.</param>
+        public void Add(DiscordAsset asset)
         {
             if (asset == null)
                 return;
@@ -44,7 +57,11 @@ namespace DiscordRichPresence.Entities
             }
         }
 
-        public void Remove(RichPresenceAsset asset)
+        /// <summary>
+        /// Remove um asset da lista.
+        /// </summary>
+        /// <param name="asset">Asset que será removido.</param>
+        public void Remove(DiscordAsset asset)
         {
             if (asset == null)
                 return;
@@ -63,6 +80,10 @@ namespace DiscordRichPresence.Entities
             }
         }
 
+        /// <summary>
+        /// Remove um asset da lista pela chave dele.
+        /// </summary>
+        /// <param name="key">Chave que será usada na busca.</param>
         public void Remove(string key)
         {
             if (string.IsNullOrEmpty(key))

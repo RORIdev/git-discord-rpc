@@ -29,35 +29,41 @@ namespace DiscordRichPresence.Pipe
         private NamedPipeClientStream Pipe;
         private ConcurrentDictionary<string, DiscordCommandCallback> Callbacks;
 
-        internal ulong ApplicationId;
+        internal ulong ApplicationId { get; set; }
+        public int InstanceId { internal get; set; }
 
-        public DiscordPipeClient(ulong application_id)
+        public DiscordPipeClient(int instance_id, ulong application_id)
         {
             this.Callbacks = new ConcurrentDictionary<string, DiscordCommandCallback>();
+
+            if (application_id < 0)
+                throw new ArgumentNullException(nameof(application_id), "Invalid application id.");
+
             this.ApplicationId = application_id;
+
+            if (instance_id < 0 || instance_id > 9)
+                throw new ArgumentNullException(nameof(instance_id), "Discord instace id, must be in valid range: 0-9");
+
+            this.InstanceId = instance_id;
         }
 
-        public async Task ConnectAsync(int id = 0)
+        public async Task ConnectAsync()
         {
-            if (id < 0 || id > 9)
-                throw new ArgumentNullException(nameof(id), "Pipe id must be valid range: 0-9");
-
             if (this.Pipe != null)
                 if (this.Pipe.IsConnected)
                     return;
 
-            this.Pipe = new NamedPipeClientStream(".", $"discord-ipc-{id}", PipeDirection.InOut);
+            this.Pipe = new NamedPipeClientStream(".", $"discord-ipc-{this.InstanceId}", PipeDirection.InOut);
 
             try
             {
                 await this.Pipe.ConnectAsync();
-                await Task.Delay(1000);
+                await Task.Delay(2500);
 
                 if (!this.Pipe.IsConnected)
                     throw new InvalidOperationException("Pipe is not connected.");
 
                 _ = Task.Run(this.InitializeAsync);
-
                 await this.Connected?.Invoke();
             }
             catch (Exception ex)
@@ -77,11 +83,8 @@ namespace DiscordRichPresence.Pipe
             if (this.Pipe == null || !this.Pipe.IsConnected)
                 return;
 
-            if (this.Pipe != null)
-            {
-                this.Pipe.Dispose();
-                this.Pipe = null;
-            }
+            this.Pipe.Dispose();
+            this.Pipe = null;
 
             await this.Disconnected?.Invoke();
         }
@@ -160,6 +163,15 @@ namespace DiscordRichPresence.Pipe
         internal async Task HandleFrameAsync(DiscordFrame frame)
         {
             var payload = frame.Payload.ToObject<DiscordCommand>();
+
+            if (!string.IsNullOrEmpty(payload.Nonce))
+            {
+                if (this.Callbacks.TryRemove(payload.Nonce, out var callback))
+                {
+                    _ = Task.Run(() => callback(this, payload).ConfigureAwait(false));
+                    return;
+                }
+            }
 
             switch (payload.Command)
             {
