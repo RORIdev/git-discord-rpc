@@ -11,24 +11,31 @@ namespace DiscordRichPresence.Test
     {
         static async Task Main(string[] args)
         {
-            var pipe = new DiscordPipeConnection(421688819868237824);
+            var client = new DiscordPipeClient(421688819868237824);
 
-            pipe.Connected += async () =>
+            client.Connected += () =>
             {
                 Console.WriteLine("Connected.");
+                return Task.CompletedTask;
             };
 
-            pipe.Disconnected += async () =>
+            client.Disconnected += () =>
             {
                 Console.WriteLine("Disconnected.");
+                return Task.CompletedTask;
             };
 
-            pipe.Errored += async ex =>
+            client.Errored += async ex =>
             {
                 Console.WriteLine(ex);
             };
 
-            await pipe.ConnectAsync(0);
+            client.Ready += async e =>
+            {
+                Console.WriteLine("Connected as {0}#{1}", e.User.Username, e.User.Discriminator);
+            };
+
+            await client.ConnectAsync(0);
 
             while(true)
             {

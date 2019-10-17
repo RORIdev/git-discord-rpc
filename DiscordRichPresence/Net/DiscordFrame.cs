@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,6 @@ namespace DiscordRichPresence.Net
         internal byte[] GetBytes()
         {
             var data = Encoding.UTF8.GetBytes(this.Payload.ToString(Formatting.None));
-
             var type = BitConverter.GetBytes((int)this.Type);
             var length = BitConverter.GetBytes(data.Length);
 
@@ -64,6 +64,12 @@ namespace DiscordRichPresence.Net
             }
             this.Type = type;
             this.Payload = JObject.Parse(Encoding.UTF8.GetString(payload));
+        }
+
+        internal string GetJson()
+        {
+            Debug.WriteLine("DiscordFrame::GetJson() called.");
+            return this.Payload.ToString(Formatting.None);
         }
     }
 }

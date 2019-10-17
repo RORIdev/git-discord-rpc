@@ -29,20 +29,22 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <FileAlignment>1024</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <FileAlignment>1024</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Net\DiscordCommand.cs" />
@@ -50,7 +52,11 @@
     <Compile Include="Net\DiscordEventType.cs" />
     <Compile Include="Net\DiscordFrame.cs" />
     <Compile Include="Net\DiscordFrameType.cs" />
-    <Compile Include="Net\DiscordPipeConnection.cs" />
+    <Compile Include="Net\DiscordPipeClient.cs" />
+    <Compile Include="Net\Entities\DiscordConfig.cs" />
+    <Compile Include="Net\Entities\DiscordHandshake.cs" />
+    <Compile Include="Net\Entities\DiscordUser.cs" />
+    <Compile Include="Net\EventArgs\ReadyEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DiscordPackage.cs" />
   </ItemGroup>
