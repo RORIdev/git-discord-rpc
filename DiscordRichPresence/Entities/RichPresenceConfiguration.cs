@@ -8,6 +8,23 @@ namespace DiscordRichPresence.Entities
         [JsonProperty("assets")]
         protected List<RichPresenceAsset> Assets { get; set; } = new List<RichPresenceAsset>();
 
+        [JsonIgnore]
+        public RichPresenceAsset DefaultAsset
+        {
+            get
+            {
+                lock (this.Assets)
+                {
+                    var index = this.Assets.FindIndex(x => x.IsDefault);
+
+                    if (index == -1)
+                        return null;
+
+                    return this.Assets[index];
+                }
+            }
+        }
+
         public void Add(RichPresenceAsset asset)
         {
             if (asset == null)
