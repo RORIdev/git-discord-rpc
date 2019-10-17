@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace DiscordRichPresence.Net
+namespace DiscordRichPresence.Pipe
 {
     public enum DiscordEventType
     {

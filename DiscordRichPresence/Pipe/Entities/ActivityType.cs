@@ -1,4 +1,4 @@
-﻿namespace DiscordRichPresence.Net.Entities
+﻿namespace DiscordRichPresence.Pipe.Entities
 {
     public enum ActivityType
     {

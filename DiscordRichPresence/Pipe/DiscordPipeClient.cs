@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DiscordRichPresence.Net.Entities;
-using DiscordRichPresence.Net.EventArgs;
+using DiscordRichPresence.Pipe.Entities;
+using DiscordRichPresence.Pipe.EventArgs;
 using Newtonsoft.Json.Linq;
 
-namespace DiscordRichPresence.Net
+namespace DiscordRichPresence.Pipe
 {
     public delegate Task DiscordCommandCallback(DiscordPipeClient connection, DiscordCommand response);
 

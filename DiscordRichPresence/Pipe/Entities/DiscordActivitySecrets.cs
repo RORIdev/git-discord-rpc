@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DiscordRichPresence.Net.Entities
+namespace DiscordRichPresence.Pipe.Entities
 {
     public class DiscordActivitySecrets
     {

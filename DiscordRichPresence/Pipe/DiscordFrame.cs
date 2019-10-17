@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DiscordRichPresence.Net
+namespace DiscordRichPresence.Pipe
 {
     public sealed class DiscordFrame
     {

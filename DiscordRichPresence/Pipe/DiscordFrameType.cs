@@ -1,4 +1,4 @@
-﻿namespace DiscordRichPresence.Net
+﻿namespace DiscordRichPresence.Pipe
 {
     public enum DiscordFrameType
     {

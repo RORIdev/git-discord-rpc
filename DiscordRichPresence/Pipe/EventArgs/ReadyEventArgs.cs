@@ -1,7 +1,7 @@
-﻿using DiscordRichPresence.Net.Entities;
+﻿using DiscordRichPresence.Pipe.Entities;
 using Newtonsoft.Json;
 
-namespace DiscordRichPresence.Net.EventArgs
+namespace DiscordRichPresence.Pipe.EventArgs
 {
     public sealed class ReadyEventArgs : System.EventArgs
     {
