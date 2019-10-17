@@ -173,7 +173,7 @@ namespace DiscordRichPresence.Net
         {
             var model = new DiscordActivity();
             activity(model);
-            return SetActivityAsync(model, null);
+            return this.SetActivityAsync(model, null);
         }
 
         public async Task SetActivityAsync(DiscordActivity activity, int? pid = null)
