@@ -36,7 +36,7 @@ namespace DiscordRichPresence.Pipe
         {
             this.Callbacks = new ConcurrentDictionary<string, DiscordCommandCallback>();
 
-            if (application_id < 0)
+            if (application_id == 0)
                 throw new ArgumentNullException(nameof(application_id), "Invalid application id.");
 
             this.ApplicationId = application_id;
