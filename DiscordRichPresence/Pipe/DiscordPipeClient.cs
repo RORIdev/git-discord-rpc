@@ -27,6 +27,7 @@ namespace DiscordRichPresence.Pipe
         public DiscordConfig Environment { get; internal set; }
 
         private NamedPipeClientStream Pipe;
+        private volatile bool IsDisposed;
         private ConcurrentDictionary<string, DiscordCommandCallback> Callbacks;
 
         internal ulong ApplicationId { get; set; }
@@ -45,16 +46,11 @@ namespace DiscordRichPresence.Pipe
                 throw new ArgumentNullException(nameof(instance_id), "Discord instace id, must be in valid range: 0-9");
 
             this.InstanceId = instance_id;
+            this.Pipe = new NamedPipeClientStream(".", $"discord-ipc-{this.InstanceId}", PipeDirection.InOut, PipeOptions.Asynchronous | PipeOptions.WriteThrough);
         }
 
         public async Task ConnectAsync()
         {
-            if (this.Pipe != null)
-                if (this.Pipe.IsConnected)
-                    return;
-
-            this.Pipe = new NamedPipeClientStream(".", $"discord-ipc-{this.InstanceId}", PipeDirection.InOut, PipeOptions.Asynchronous | PipeOptions.WriteThrough);
-
             try
             {
                 await this.Pipe.ConnectAsync().ConfigureAwait(false);
@@ -74,24 +70,26 @@ namespace DiscordRichPresence.Pipe
             catch (Exception ex)
             {
                 await this.Errored?.Invoke(ex);
-                await this.CloseAsync().ConfigureAwait(false);
+                await this.DisconnectAsync().ConfigureAwait(false);
             }
         }
 
         public async Task DisconnectAsync()
         {
-            await this.CloseAsync();
-        }
-
-        async Task CloseAsync()
-        {
-            if (this.Pipe == null || !this.Pipe.IsConnected)
+            if (this.IsDisposed)
                 return;
 
+            this.IsDisposed = true;
             this.Pipe.Dispose();
             this.Pipe = null;
 
             await this.Disconnected?.Invoke();
+        }
+
+        async Task RequireConnectedAsync()
+        {
+            if (!this.Pipe.IsConnected)
+                await this.ConnectAsync();
         }
 
         async Task ReadPipeAsync()
@@ -115,7 +113,7 @@ namespace DiscordRichPresence.Pipe
                                 break;
 
                             case DiscordFrameType.Close:
-                                await this.CloseAsync();
+                                await this.DisconnectAsync();
                                 break;
                         }
                     }
@@ -125,9 +123,11 @@ namespace DiscordRichPresence.Pipe
                 catch (Exception ex)
                 {
                     await this.Errored?.Invoke(ex);
-                    await this.CloseAsync().ConfigureAwait(false);
+                    await this.DisconnectAsync().ConfigureAwait(false);
                 }
             }
+
+            await this.DisconnectAsync().ConfigureAwait(false);
         }
 
         internal async Task SendAsync(DiscordFrameType type, object payload)
@@ -140,6 +140,7 @@ namespace DiscordRichPresence.Pipe
                 .WithPayload(payload)
                 .GetBytes();
 
+            await this.RequireConnectedAsync().ConfigureAwait(false);
             await this.Pipe.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
         }
 
@@ -156,6 +157,7 @@ namespace DiscordRichPresence.Pipe
             if (callback != null)
                 this.Callbacks.AddOrUpdate(command.Nonce, callback, (key, old) => callback);
 
+            await this.RequireConnectedAsync().ConfigureAwait(false);
             await this.Pipe.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
         }
 
@@ -204,6 +206,7 @@ namespace DiscordRichPresence.Pipe
                 .WithPayload(command)
                 .GetBytes();
 
+            await this.RequireConnectedAsync().ConfigureAwait(false);
             await this.Pipe.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
         }
 

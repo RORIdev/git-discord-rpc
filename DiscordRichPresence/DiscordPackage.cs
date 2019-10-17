@@ -39,7 +39,7 @@ namespace DiscordRichPresence
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.Configuration.InitializeAsync();
-            await this.ConnectAsync();
+            await this.SetupPipeAsync();
 
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
@@ -75,19 +75,23 @@ namespace DiscordRichPresence
         async Task HandleDisconnectedAsync()
         {
             await Task.Delay(5000);
-            await this.ConnectAsync();
+            await this.SetupPipeAsync();
         }
 
-        async Task ConnectAsync()
+        async Task SetupPipeAsync()
         {
             if (this.Client != null)
             {
                 this.Client.Ready -= this.HandleReadyAsync;
                 this.Client.Disconnected -= this.HandleDisconnectedAsync;
+
+                await this.Client.DisconnectAsync();
+
+                this.Client = null;
             }
 
             this.Client = new DiscordPipeClient(this.Configuration.Discord.CurrentInstanceId,
-                this.Configuration.Discord.ApplicationId);
+                    this.Configuration.Discord.ApplicationId);
 
             this.Client.Ready += this.HandleReadyAsync;
             this.Client.Disconnected += this.HandleDisconnectedAsync;
