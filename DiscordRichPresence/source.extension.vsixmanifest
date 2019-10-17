@@ -2,9 +2,12 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="DiscordRichPresence.c4dd9c3b-4865-43f4-b3f5-bd789016e78d" Version="1.3" Language="en-US" Publisher="Storm Development Software" />
-        <DisplayName>DiscordRichPresence</DisplayName>
-        <Description xml:space="preserve">Displays what file you're working in Visual Studio in Discord.</Description>
+        <DisplayName>Discord Rich Presence</DisplayName>
+        <Description xml:space="preserve">Displays what file you're working in visual studio in discord.</Description>
         <MoreInfo>https://github.com/StormDevelopmentSoftware/DiscordRichPresence</MoreInfo>
+        <Icon>Resources\Discord_Logo_Color.png</Icon>
+        <PreviewImage>Resources\Discord_Logo_Color.png</PreviewImage>
+        <Tags>development, discord, discord rich presence, discord rpc, discordrichpresence, discord-rich-presence, discordrich, discord-rich, discordrpc, discord-rpc, rpc, visual studio discord, visual studio rich presence</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,)" />
