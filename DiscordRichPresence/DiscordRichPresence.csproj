@@ -47,6 +47,9 @@
     <FileAlignment>1024</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\DiscordConfiguration.cs" />
+    <Compile Include="Entities\RichPresenceAsset.cs" />
+    <Compile Include="Entities\RichPresenceConfiguration.cs" />
     <Compile Include="Pipe\DiscordCommand.cs" />
     <Compile Include="Pipe\DiscordCommandType.cs" />
     <Compile Include="Pipe\DiscordEventType.cs" />
