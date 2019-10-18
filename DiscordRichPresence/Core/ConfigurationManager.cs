@@ -10,17 +10,20 @@ namespace DiscordRichPresence.Core
     {
         public DiscordConfiguration Discord { get; private set; }
         public DiscordAssetsConfiguration Assets { get; private set; }
+        public DiscordLocalizedConfiguration Localization { get; private set; }
 
         public ConfigurationManager()
         {
             this.Discord = DiscordConfiguration.Empty;
             this.Assets = DiscordAssetsConfiguration.Empty;
+            this.Localization = DiscordLocalizedConfiguration.Empty;
         }
 
         public async Task InitializeAsync()
         {
             this.Discord = await this.GetOrCreateDefaultAsync("discord", DiscordConfiguration.Empty);
             this.Assets = await this.GetOrCreateDefaultAsync("assets", DiscordAssetsConfiguration.Empty);
+            this.Localization = await this.GetOrCreateDefaultAsync("localization", DiscordLocalizedConfiguration.Empty);
         }
 
         async Task<T> GetOrCreateDefaultAsync<T>(string name, T @default)
@@ -29,15 +32,25 @@ namespace DiscordRichPresence.Core
             var file = new FileInfo(Path.Combine(user_profile, "Storm Development Software", "Discord Rich Presence", $"{name}.json"));
 
             var instance = @default;
+            var data = default(byte[]);
+
+            if (name == "discord")
+                data = Properties.Resources.DefaultDiscordFile;
+            else if (name == "assets")
+                data = Properties.Resources.DefaultAssetsFile;
+            else if (name == "localization")
+                data = Properties.Resources.DefaultLocalizationFile;
+            else
+                return instance;
 
             if (!file.Directory.Exists)
                 file.Directory.Create();
 
             if (!file.Exists)
             {
-                using (var sw = file.CreateText())
+                using (var sw = file.Create())
                 {
-                    await sw.WriteLineAsync(JsonConvert.SerializeObject(instance, Formatting.Indented));
+                    await sw.WriteAsync(data, 0, data.Length);
                     await sw.FlushAsync();
                 }
             }

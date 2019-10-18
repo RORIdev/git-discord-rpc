@@ -3,10 +3,35 @@ using Newtonsoft.Json;
 
 namespace DiscordRichPresence.Entities
 {
+    public delegate string GetStringFormatDelegate(string key, params object[] args);
+
     public class DiscordLocalizedConfiguration
     {
+        [JsonIgnore]
+        public static readonly DiscordLocalizedConfiguration Empty = new DiscordLocalizedConfiguration
+        {
+            Strings = new List<DiscordLocalizedString>
+            {
+                new DiscordLocalizedString("base_working_text", "Working On: {0}"),
+                new DiscordLocalizedString("base_solution_text", "Solution: {0}"),
+                new DiscordLocalizedString("base_editing_text", "Editing: {0}"),
+                new DiscordLocalizedString("base_unknown_file_text", "Unknown File")
+            }
+        };
+
         [JsonProperty("strings")]
         protected List<DiscordLocalizedString> Strings { get; set; } = new List<DiscordLocalizedString>();
+
+        public GetStringFormatDelegate GetFormatDelegate()
+        {
+            return new GetStringFormatDelegate((key, args) =>
+            {
+                if (!this.FindString(key, out var str))
+                    return key;
+
+                return str.Format(args);
+            });
+        }
 
         public bool FindString(string key, out DiscordLocalizedString value)
         {

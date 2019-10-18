@@ -1,0 +1,20 @@
+{
+  "strings": [
+    {
+      "key": "base_working_text",
+      "text": "Working On: {0}"
+    },
+    {
+      "key": "base_solution_text",
+      "text": "Solution: {0}"
+    },
+    {
+      "key": "base_editing_text",
+      "text": "Editing: {0}"
+    },
+    {
+      "key": "base_unknown_file_text",
+      "text": "Unknown File"
+    }
+  ]
+}

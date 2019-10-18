@@ -21,7 +21,7 @@ namespace DiscordRichPresence.Entities
         /// Texto que será exibido no asset.
         /// </summary>
         [JsonProperty("text")]
-        public string Text { get; set; } = "#unknown_file";
+        public string Text { get; set; }
 
         /// <summary>
         /// Extensões que são aplicaveis no asset.

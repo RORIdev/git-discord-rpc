@@ -8,6 +8,17 @@ namespace DiscordRichPresence.Entities
 {
     public class DiscordLocalizedString
     {
+        public DiscordLocalizedString()
+        {
+
+        }
+
+        public DiscordLocalizedString(string key, string text)
+        {
+            this.Key = key;
+            this.Text = text;
+        }
+
         public static DiscordLocalizedString FromEmpty(string key)
         {
             return new DiscordLocalizedString
@@ -17,10 +28,10 @@ namespace DiscordRichPresence.Entities
             };
         }
 
-        [JsonProperty("text")]
+        [JsonProperty("key")]
         public string Key { get; set; }
 
-        [JsonProperty("key")]
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         public string Format(params object[] args)

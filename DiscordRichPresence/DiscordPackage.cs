@@ -95,88 +95,115 @@ namespace DiscordRichPresence
 
         void HandleWindowActivated(Window window, Window old)
         {
-            //System.Diagnostics.Debugger.Break();
-
             _ = Task.Run(async () =>
             {
-                if (!this.Configuration.Discord.DisplayTimestamp)
-                    this.LastActivity.Timestamps = null;
-                else
+                try
                 {
-                    if (this.Configuration.Discord.AutoResetTimestamp)
-                        this.LastActivity.Timestamps.StartTime = DateTimeOffset.Now;
-                }
+                    var localize = this.Configuration.Localization.GetFormatDelegate();
 
-                if (this.LastActivity.Assets == null)
-                    this.LastActivity.Assets = new DiscordActivityAssets();
+                    if (this.LastActivity.Assets == null)
+                        this.LastActivity.Assets = new DiscordActivityAssets();
 
-                if (window == null && old == null)
-                    return;
+                    if (window?.Project == null && old?.Project == null)
+                        return;
 
-                if (window == null && old != null)
-                    window = old;
+                    if (window?.Project == null && old?.Project != null)
+                        window = old;
 
-                if (!this.Configuration.Discord.DisplayProject)
-                    this.LastActivity.State = null;
-                else
-                {
-                    if (this.TryGetProjectName(window, out var project_name))
-                        this.LastActivity.State = $"Working on: {project_name}";
-                }
+                    if (!this.Configuration.Discord.DisplayTimestamp)
+                        this.LastActivity.Timestamps = null;
+                    else
+                    {
+                        if (this.Configuration.Discord.AutoResetTimestamp)
+                            this.LastActivity.Timestamps.StartTime = DateTimeOffset.Now;
+                    }
 
-                if (!this.Configuration.Discord.DisplaySolution)
-                {
-                    this.LastActivity.Assets.SmallImage = null;
-                    this.LastActivity.Assets.SmallText = null;
-                }
-                else
-                {
-                    if (this.DTE.Solution == null)
+                    if (!this.Configuration.Discord.DisplayProject)
+                        this.LastActivity.State = null;
+                    else
+                    {
+                        if (this.TryGetProjectName(window, out var project_name))
+                            this.LastActivity.State = localize("base_working_text", project_name);
+                        else
+                            this.LastActivity.State = null;
+                    }
+
+                    if (!this.Configuration.Discord.DisplaySolution)
                     {
                         this.LastActivity.Assets.SmallImage = null;
                         this.LastActivity.Assets.SmallText = null;
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(this.DTE.Solution.FullName))
+                        if (this.DTE.Solution != null)
                         {
-                            var file = new FileInfo(this.DTE.Solution.FullName);
-                            this.LastActivity.Assets.SmallText = $"Solution: {file.Name}";
-                            this.LastActivity.Assets.SmallImage = "visualstudio_small";
+                            if (!string.IsNullOrEmpty(this.DTE.Solution.FullName))
+                            {
+                                try
+                                {
+                                    var file = new FileInfo(this.DTE.Solution.FullName);
+                                    this.LastActivity.Assets.SmallText = localize("base_solution_text", Path.GetFileNameWithoutExtension(file.Name));
+                                    this.LastActivity.Assets.SmallImage = "visualstudio_small";
+                                }
+                                catch
+                                {
+                                    this.LastActivity.Assets.SmallImage = null;
+                                    this.LastActivity.Assets.SmallText = null;
+                                }
+                            }
                         }
                     }
-                }
 
-                if (this.TryGetFileName(window, out var file_name, out var ext))
+                    if (this.TryGetFileName(window, out var file_name, out var ext))
+                    {
+                        this.LastActivity.Details = localize("base_editing_text", file_name);
+
+                        if(this.Configuration.Assets.FindAsset(ext, out var asset))
+                        {
+                            var text = string.Empty;
+                            var localized_key = asset.Text.StartsWith("#") ? asset.Text.Substring(1) : null;
+
+                            if (!string.IsNullOrEmpty(localized_key))
+                                text = localize(localized_key);
+                            else
+                                text = asset.Text;
+
+                            this.LastActivity.Assets.LargeImage = asset.Key;
+                            this.LastActivity.Assets.LargeText = text;
+                        }
+                        else
+                        {
+                            asset = this.Configuration.Assets.DefaultAsset;
+
+                            if (asset == null)
+                            {
+                                this.LastActivity.Assets.LargeImage = "visualstudio_small";
+                                this.LastActivity.Assets.LargeText = "Visual Studio";
+                            }
+                            else
+                            {
+                                this.LastActivity.Assets.LargeImage = asset.Key;
+
+                                if (asset.Key == "default_file")
+                                    this.LastActivity.Assets.LargeText = localize("base_unknown_file_text");
+                                else
+                                    this.LastActivity.Assets.LargeText = asset.Text;
+                            }
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(this.LastActivity.Assets.LargeImage)
+                        && string.IsNullOrEmpty(this.LastActivity.Assets.LargeText)
+                        && string.IsNullOrEmpty(this.LastActivity.Assets.SmallImage)
+                        && string.IsNullOrEmpty(this.LastActivity.Assets.SmallText))
+                        this.LastActivity.Assets = null;
+
+                    await this.Client.SetActivityAsync(this.LastActivity).ConfigureAwait(false);
+                }
+                catch (Exception ex)
                 {
-                    this.LastActivity.Details = $"Editing: {file_name}";
-
-                    var asset = this.Configuration.Assets.FindAsset(ext);
-
-                    if (asset == null)
-                    {
-                        asset = this.Configuration.Assets.DefaultAsset;
-
-                        if (asset == null)
-                        {
-                            this.LastActivity.Assets.LargeImage = "visualstudio_small";
-                            this.LastActivity.Assets.LargeText = "Visual Studio";
-                        }
-                    }
-                    else
-                    {
-                        this.LastActivity.Assets.LargeImage = asset.Key;
-                        this.LastActivity.Assets.LargeText = asset.Text;
-                    }
+                    System.Diagnostics.Debug.WriteLine("\n\nSET ACTIVITY ERROR: {0}\n\n", args: ex);
                 }
-
-                if (string.IsNullOrEmpty(this.LastActivity.Assets.LargeImage)
-                    && string.IsNullOrEmpty(this.LastActivity.Assets.LargeText)
-                    && string.IsNullOrEmpty(this.LastActivity.Assets.SmallImage)
-                    && string.IsNullOrEmpty(this.LastActivity.Assets.SmallText))
-                    this.LastActivity.Assets = null;
-
-                await this.Client.SetActivityAsync(this.LastActivity).ConfigureAwait(false);
             });
         }
 
@@ -184,12 +211,22 @@ namespace DiscordRichPresence
         {
             name = null;
 
+            if (window == null)
+                return false;
+
             if (window.Project == null)
                 return false;
 
-            var file = new FileInfo(window.Project.FullName);
-            name = Path.GetFileNameWithoutExtension(file.Name);
-            return true;
+            try
+            {
+                var file = new FileInfo(window.Project.FullName);
+                name = Path.GetFileNameWithoutExtension(file.Name);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         bool TryGetFileName(Window window, out string name, out string extension)
