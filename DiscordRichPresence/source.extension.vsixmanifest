@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="DiscordRichPresence.49f53cf2-2137-43c1-8080-3b873aa40684" Version="1.3" Language="en-US" Publisher="Storm Development Software" />
+        <Identity Id="DiscordRichPresence.49f53cf2-2137-43c1-8080-3b873aa40684" Version="1.3.1" Language="en-US" Publisher="Storm Development Software" />
         <DisplayName>Discord Rich Presence</DisplayName>
         <Description xml:space="preserve">Displays what file you're working in visual studio in discord.</Description>
         <MoreInfo>https://github.com/StormDevelopmentSoftware/DiscordRichPresence</MoreInfo>
