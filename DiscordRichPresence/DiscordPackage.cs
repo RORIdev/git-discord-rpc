@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
-using DiscordRichPresence.Core;
 using DiscordRichPresence.Pipe;
 using DiscordRichPresence.Pipe.Entities;
 using EnvDTE;
@@ -16,13 +14,9 @@ using DiscordRichPresence.Pipe.EventArgs;
 namespace DiscordRichPresence
 {
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid("a266a262-709b-4be0-a2f9-8587c845f573")]
-
-    //[ProvideService(UIContextGuids.SolutionExists, IsAsyncQueryable = false)]
-    //[ProvideService(UIContextGuids.NoSolution, IsAsyncQueryable = false)]
-
     [ProvideAutoLoad(UIContextGuids.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(UIContextGuids.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
+    [Guid("a266a262-709b-4be0-a2f9-8587c845f573")]
     public sealed class DiscordPackage : AsyncPackage
     {
         public ConfigurationManager Configuration { get; }
