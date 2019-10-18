@@ -23,12 +23,9 @@ Displays what file you're working in visual studio in discord.
 Located in `%USERPROFILE%\Storm Development Software\Discord Rich Presence`
 By default configuration have standard values for an discord application with desired assets. But you can customize everything.
 
-- discord.json
-Discord rich presence related settings and capabilities settings.
-<br/>
-
-- assets.json
-Assets related settings, list of assets with list of file extensions supported by asset.
+- discord.json: Discord rich presence related settings and capabilities settings.
+- assets.json: Assets related settings, list of assets with list of file extensions supported by asset.
+- localization.json: Localization related settings, list of localized string (per user localizable). For assets localization put hash (#) in start of `"text": "#my_localizaiton_key"`
 <br/>
 
 # Contributing
