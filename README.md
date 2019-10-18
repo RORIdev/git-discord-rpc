@@ -1,5 +1,5 @@
 # Discord Rich Precense for VS
-Displays what file you're working in visual studio in discord.
+Displays what file you're working in visual studio in discord. - [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=StormDevelopmentSoftware.discordrichpresence)
 
 # Example
 
