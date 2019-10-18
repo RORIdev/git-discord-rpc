@@ -1,6 +1,10 @@
 # Discord Rich Precense for VS
 Displays what file you're working in visual studio in discord.
 
+# Example
+
+<img src="https://i.imgur.com/8o64D24.png" alt="discord rich presence example image"></img>
+
 # Features
 - Display current file that you are editing.
 - Display elapsed time since visual studio is open.

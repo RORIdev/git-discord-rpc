@@ -53,6 +53,10 @@ namespace DiscordRichPresence.Core
                     await sw.WriteAsync(data, 0, data.Length);
                     await sw.FlushAsync();
                 }
+
+                using (var ms = new MemoryStream(data))
+                using (var sr = new StreamReader(ms))
+                    instance = JsonConvert.DeserializeObject<T>(await sr.ReadToEndAsync());
             }
             else
             {
