@@ -51,6 +51,8 @@
     <Compile Include="Entities\DiscordConfiguration.cs" />
     <Compile Include="Entities\DiscordAsset.cs" />
     <Compile Include="Entities\DiscordAssetsConfiguration.cs" />
+    <Compile Include="Entities\DiscordLocalizedConfiguration.cs" />
+    <Compile Include="Entities\DiscordLocalizedString.cs" />
     <Compile Include="Pipe\DiscordCommand.cs" />
     <Compile Include="Pipe\DiscordCommandType.cs" />
     <Compile Include="Pipe\DiscordEventType.cs" />
