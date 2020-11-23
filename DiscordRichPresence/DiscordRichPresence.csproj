@@ -48,6 +48,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\ConfigurationProvider.cs" />
+    <Compile Include="Core\SettingsControlProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Entities\DiscordSettings.cs" />
     <Compile Include="Entities\Asset.cs" />
     <Compile Include="Entities\AssetSettings.cs" />
@@ -78,6 +81,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SettingsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\SettingsControl.Designer.cs">
+      <DependentUpon>SettingsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Utilities.cs" />
   </ItemGroup>
@@ -113,6 +122,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SettingsControl.resx">
+      <DependentUpon>SettingsControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

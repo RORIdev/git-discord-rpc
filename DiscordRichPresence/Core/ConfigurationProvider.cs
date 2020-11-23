@@ -12,8 +12,11 @@ namespace DiscordRichPresence.Core
         public AssetSettings Assets { get; private set; }
         public LocalizationSettings Localization { get; private set; }
 
+        public static ConfigurationProvider Instance { get; private set; }
+
         public ConfigurationProvider()
         {
+            Instance = this;
             this.Discord = DiscordSettings.Empty;
             this.Assets = AssetSettings.Empty;
             this.Localization = LocalizationSettings.Empty;
@@ -26,20 +29,42 @@ namespace DiscordRichPresence.Core
             this.Localization = await this.GetOrCreateDefaultAsync("localization", LocalizationSettings.Empty);
         }
 
+        public async Task SaveConfigurationsAsync()
+        {
+            await this.SaveConfigurationAsync(this.Discord, "discord");
+            await this.SaveConfigurationAsync(this.Assets, "assets");
+            await this.SaveConfigurationAsync(this.Localization, "localization");
+        }
+
+        async Task SaveConfigurationAsync<TConfig>(TConfig value, string name)
+        {
+            var file = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Storm Development Software", "Discord Rich Presence", $"{name}.json"));
+
+            if (!file.Directory.Exists)
+                file.Directory.Create();
+
+            using (var fs = file.Open(FileMode.Create))
+            using (var sw = new StreamWriter(fs))
+            {
+                await sw.WriteLineAsync(JsonConvert.SerializeObject(value, Formatting.Indented));
+                await sw.FlushAsync();
+            }
+        }
+
         async Task<TConfig> GetOrCreateDefaultAsync<TConfig>(string name, TConfig empty)
         {
-            var userprofile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var file = new FileInfo(Path.Combine(userprofile, "Storm Development Software", "Discord Rich Presence", $"{name}.json"));
+            var file = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Storm Development Software", "Discord Rich Presence", $"{name}.json"));
 
             TConfig instance = empty;
-            var data = default(byte[]);
+
+            byte[] buffer;
 
             if (name == "discord")
-                data = Properties.Resources.DefaultDiscordFile;
+                buffer = Properties.Resources.DefaultDiscordFile;
             else if (name == "assets")
-                data = Properties.Resources.DefaultAssetsFile;
+                buffer = Properties.Resources.DefaultAssetsFile;
             else if (name == "localization")
-                data = Properties.Resources.DefaultLocalizationFile;
+                buffer = Properties.Resources.DefaultLocalizationFile;
             else
                 return instance;
 
@@ -50,11 +75,11 @@ namespace DiscordRichPresence.Core
             {
                 using (var stream = file.Open(FileMode.Create))
                 {
-                    await stream.WriteAsync(data, 0, data.Length);
+                    await stream.WriteAsync(buffer, 0, buffer.Length);
                     await stream.FlushAsync();
                 }
 
-                using (var ms = new MemoryStream(data))
+                using (var ms = new MemoryStream(buffer))
                 using (var sr = new StreamReader(ms))
                     instance = JsonConvert.DeserializeObject<TConfig>(await sr.ReadToEndAsync());
             }

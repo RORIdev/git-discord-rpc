@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using DiscordRichPresence.Core;
 using DiscordRichPresence.Pipe;
 using DiscordRichPresence.Pipe.Entities;
 using DiscordRichPresence.Pipe.EventArgs;
@@ -17,6 +18,7 @@ namespace DiscordRichPresence
     [ProvideAutoLoad(UIContextGuids.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(UIContextGuids.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid("a266a262-709b-4be0-a2f9-8587c845f573")]
+    [ProvideOptionPage(typeof(SettingsControlProvider), "Discord", "Discord", 0, 0, true)]
     public sealed class DiscordPackage : AsyncPackage
     {
         public ConfigurationProvider Configuration { get; }
@@ -34,7 +36,6 @@ namespace DiscordRichPresence
         {
             await this.Configuration.InitializeAsync();
             await this.SetupPipeAsync();
-
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
             this.DTE = (await this.GetServiceAsync(typeof(DTE)).ConfigureAwait(false)) as DTE;
@@ -96,8 +97,13 @@ namespace DiscordRichPresence
             await this.Client.ConnectAsync();
         }
 
+        DateTimeOffset OriginalStartTime = DateTimeOffset.MinValue;
+
         void HandleWindowActivated(Window window, Window old)
         {
+            if (this.OriginalStartTime == DateTimeOffset.MinValue)
+                this.OriginalStartTime = DateTimeOffset.Now;
+
             _ = Task.Run(async () =>
             {
                 try
@@ -117,6 +123,9 @@ namespace DiscordRichPresence
                         this.LastActivity.Timestamps = null;
                     else
                     {
+                        if (this.LastActivity.Timestamps == null)
+                            this.LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = this.OriginalStartTime };
+
                         if (this.Configuration.Discord.AutoResetTimestamp)
                             this.LastActivity.Timestamps.StartTime = DateTimeOffset.Now;
                     }
