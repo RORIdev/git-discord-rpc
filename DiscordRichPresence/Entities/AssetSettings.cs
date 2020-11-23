@@ -3,22 +3,22 @@ using Newtonsoft.Json;
 
 namespace DiscordRichPresence.Entities
 {
-    public class DiscordAssetsConfiguration
+    public class AssetSettings
     {
         [JsonIgnore]
-        public static readonly DiscordAssetsConfiguration Empty = new DiscordAssetsConfiguration();
+        public static readonly AssetSettings Empty = new AssetSettings();
 
         /// <summary>
         /// Lista com todos os assets carregados da configuração.
         /// </summary>
         [JsonProperty("assets")]
-        protected List<DiscordAsset> Assets { get; set; } = new List<DiscordAsset>();
+        protected List<Asset> Assets { get; set; } = new List<Asset>();
 
         /// <summary>
         /// Indica o asset padrão, quando houver um tipo de arquivo desconhecido.
         /// </summary>
         [JsonIgnore]
-        public DiscordAsset DefaultAsset
+        public Asset DefaultAsset
         {
             get
             {
@@ -39,7 +39,7 @@ namespace DiscordRichPresence.Entities
         /// </summary>
         /// <param name="extension">Extensão que será buscada.</param>
         /// <returns>Asset que corresponde a pesquisa; Nulo se não foi encontrado.</returns>
-        public bool FindAsset(string extension,out DiscordAsset asset)
+        public bool FindAsset(string extension, out Asset asset)
         {
             asset = null;
 
@@ -59,7 +59,7 @@ namespace DiscordRichPresence.Entities
         /// Adiciona um asset a lista.
         /// </summary>
         /// <param name="asset">Asset que será adicionado.</param>
-        public void Add(DiscordAsset asset)
+        public void Add(Asset asset)
         {
             if (asset == null)
                 return;
@@ -67,7 +67,7 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(asset.Key))
                 return;
 
-            lock(this.Assets)
+            lock (this.Assets)
             {
                 var index = this.Assets.FindIndex(x => x.Key.Equals(asset.Key));
 
@@ -82,7 +82,7 @@ namespace DiscordRichPresence.Entities
         /// Remove um asset da lista.
         /// </summary>
         /// <param name="asset">Asset que será removido.</param>
-        public void Remove(DiscordAsset asset)
+        public void Remove(Asset asset)
         {
             if (asset == null)
                 return;

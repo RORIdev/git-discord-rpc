@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DiscordRichPresence.Pipe;
 using DiscordRichPresence.Pipe.Entities;
@@ -64,7 +61,7 @@ namespace DiscordRichPresence.Test
 
             await client.ConnectAsync();
 
-            while(true)
+            while (true)
             {
                 await Task.Delay(100);
             }

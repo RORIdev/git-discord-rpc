@@ -2,10 +2,10 @@
 
 namespace DiscordRichPresence.Entities
 {
-    public class DiscordConfiguration
+    public class DiscordSettings
     {
         [JsonIgnore]
-        public static readonly DiscordConfiguration Empty = new DiscordConfiguration();
+        public static readonly DiscordSettings Empty = new DiscordSettings();
 
         /// <summary>
         /// Id da aplicação do discord.
@@ -16,8 +16,8 @@ namespace DiscordRichPresence.Entities
         /// <summary>
         /// Determina o número da instância que o ipc do discord está. Valores válidos entre 0 e 9
         /// </summary>
-        [JsonProperty("current_instance_id")]
-        public int CurrentInstanceId { get; set; } = 0;
+        [JsonProperty("discord_instance_id")]
+        public int PipeInstanceId { get; set; } = 0;
 
         /// <summary>
         /// Determina se irá mostrar o nome do projeto ao invés da solução. Padrão: Não.

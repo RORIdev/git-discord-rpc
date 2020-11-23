@@ -1,9 +1,9 @@
 {
-  "application_id": 421688819868237824,
-  "current_instance_id": 0,
-  "display_project_name": true,
-  "display_solution_name": false,
-  "display_file_name": true,
-  "display_timestamp": true,
-  "auto_reset_timestamp": false
+    "application_id": 421688819868237824,
+    "pipe_instance_id": 0,
+    "display_project_name": true,
+    "display_solution_name": false,
+    "display_file_name": true,
+    "display_timestamp": true,
+    "auto_reset_timestamp": false
 }

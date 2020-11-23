@@ -211,20 +211,20 @@ namespace DiscordRichPresence.Pipe
             switch (command.Event)
             {
                 case DiscordEventType.Ready:
-                {
-                    var e = command.Data.ToObject<ReadyEventArgs>();
-                    e.Client = this;
+                    {
+                        var e = command.Data.ToObject<ReadyEventArgs>();
+                        e.Client = this;
 
-                    this.Environment = e.Configuration;
-                    this.RpcVersion = e.Version;
-                    this.CurrentUser = e.User;
+                        this.Environment = e.Configuration;
+                        this.RpcVersion = e.Version;
+                        this.CurrentUser = e.User;
 
-                    var handler = this.Ready;
+                        var handler = this.Ready;
 
-                    if (handler != null)
-                        await handler.Invoke(e).ConfigureAwait(false);
-                }
-                break;
+                        if (handler != null)
+                            await handler.Invoke(e).ConfigureAwait(false);
+                    }
+                    break;
             }
         }
     }

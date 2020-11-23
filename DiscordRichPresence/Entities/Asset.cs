@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace DiscordRichPresence.Entities
 {
-    public class DiscordAsset
+    public class Asset
     {
         /// <summary>
         /// Chave do asset.

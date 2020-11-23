@@ -1,27 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace DiscordRichPresence.Entities
 {
-    public class DiscordLocalizedString
+    public class LocalizationEntry
     {
-        public DiscordLocalizedString()
+        public LocalizationEntry()
         {
 
         }
 
-        public DiscordLocalizedString(string key, string text)
+        public LocalizationEntry(string key, string text)
         {
             this.Key = key;
             this.Text = text;
         }
 
-        public static DiscordLocalizedString FromEmpty(string key)
+        public static LocalizationEntry FromEmpty(string key)
         {
-            return new DiscordLocalizedString
+            return new LocalizationEntry
             {
                 Key = key,
                 Text = key

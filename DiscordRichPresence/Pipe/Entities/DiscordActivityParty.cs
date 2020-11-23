@@ -18,12 +18,12 @@ namespace DiscordRichPresence.Pipe.Entities
         {
             get
             {
-                CheckSizeNull();
+                this.CheckSizeNull();
                 return this._size[0];
             }
             set
             {
-                CheckSizeNull();
+                this.CheckSizeNull();
                 this._size[0] = value;
             }
         }
@@ -33,12 +33,12 @@ namespace DiscordRichPresence.Pipe.Entities
         {
             get
             {
-                CheckSizeNull();
+                this.CheckSizeNull();
                 return this._size[1];
             }
             set
             {
-                CheckSizeNull();
+                this.CheckSizeNull();
                 this._size[1] = value;
             }
         }
