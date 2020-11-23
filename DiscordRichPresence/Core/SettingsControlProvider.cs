@@ -3,7 +3,7 @@ using System.Threading;
 using System.Windows.Forms;
 using DiscordRichPresence.UI;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
+using Task = System.Threading.Tasks.Task;
 
 namespace DiscordRichPresence.Core
 {
@@ -18,18 +18,22 @@ namespace DiscordRichPresence.Core
         protected override IWin32Window Window
             => new SettingsControl();
 
-        static readonly Mutex SyncMtx = new Mutex(false);
+        static readonly SemaphoreSlim WriteSemaphore = new SemaphoreSlim(1, 1);
 
         public override void SaveSettingsToStorage()
         {
-            if (SyncMtx.WaitOne())
+            _ = Task.Run(async () =>
             {
-                _ = System.Threading.Tasks.Task.Run(async () =>
+                try
                 {
+                    await WriteSemaphore.WaitAsync();
                     await ConfigurationProvider.Instance.SaveConfigurationsAsync();
-                    SyncMtx.ReleaseMutex();
-                });
-            }
+                }
+                finally
+                {
+                    WriteSemaphore.Release();
+                }
+            });
         }
     }
 }
