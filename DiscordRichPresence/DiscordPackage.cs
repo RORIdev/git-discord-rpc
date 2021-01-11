@@ -225,9 +225,14 @@ namespace DiscordRichPresence
 
             var hasProject = TryGetProjectName(window, out var project);
             var hasFile = TryGetFileName(window, out var file, out var extension);
+            var hasSolution = TryGetSolutionName(out var solution);
 
-            if (hasProject) {
+            if (hasProject && Configuration.Discord.DisplayProject) {
                 activity.State = i11n("base_working_text", project);
+            }
+
+            if (hasSolution && Configuration.Discord.DisplaySolution) {
+                activity.State = i11n("base_solution_text", solution);
             }
 
             if (hasFile) {
