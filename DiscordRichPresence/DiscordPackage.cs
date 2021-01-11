@@ -24,7 +24,8 @@ namespace DiscordRichPresence
     {
         public ConfigurationProvider Configuration { get; }
         public DiscordPipeClient Client { get; private set; }
-        public DiscordActivity LastActivity { get; private set; }
+        public DiscordActivity InitialActivity { get; private set; }
+
         public DTE DTE { get; private set; }
         public Events Events { get; private set; }
 
@@ -50,26 +51,26 @@ namespace DiscordRichPresence
 
         async Task HandleReadyAsync(ReadyEventArgs e)
         {
-            if (LastActivity == null)
+            if (InitialActivity == null)
             {
-                LastActivity = new DiscordActivity
+                InitialActivity = new DiscordActivity
                 {
                     Assets = new DiscordActivityAssets
                     {
-                        LargeImage = "visualstudio_small",
-                        LargeText = "Visual Studio"
+                        LargeImage = "gitrpc",
+                        LargeText = "roridev",
+                        SmallImage = "git",
+                        SmallText = "narcisism, yay!"
                     },
-                    Timestamps = new DiscordActivityTimestamps
-                    {
-                        StartTime = DateTimeOffset.Now
-                    }
+                    State = "Loading Visual Studio",
+                    Details = "Extension"
                 };
 
                 if (Configuration.Discord.DisplayTimestamp)
-                    LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = DateTimeOffset.Now };
+                    InitialActivity.Timestamps = new DiscordActivityTimestamps { StartTime = DateTimeOffset.Now };
             }
 
-            await Client.SetActivityAsync(LastActivity);
+            await Client.SetActivityAsync(InitialActivity);
         }
 
         async Task HandleDisconnectedAsync()
@@ -130,7 +131,10 @@ namespace DiscordRichPresence
 
         DiscordActivity GetNextActivity(Window window , GetStringFormatDelegate i11n) {
 
-            var activity = new DiscordActivity();
+            var activity = new DiscordActivity {
+                Timestamps = new DiscordActivityTimestamps(),
+                Assets = new DiscordActivityAssets()
+            };
 
             var hasProject = TryGetProjectName(window, out var project);
             var hasFile = TryGetFileName(window, out var file, out var extension);
@@ -153,7 +157,7 @@ namespace DiscordRichPresence
             }
 
             if (hasFile) {
-                LastActivity.Details = i11n("base_editing_text", file);
+                activity.Details = i11n("base_editing_text", file);
                 var asset = GetAssetFromFileExtension(extension);
                 activity.Assets.LargeImage = asset.Key;
                 activity.Assets.LargeText = GetAssetName(asset, i11n);
