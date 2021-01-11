@@ -231,6 +231,14 @@ namespace DiscordRichPresence
                 activity.State = i11n("base_working_text", project);
             }
 
+            if (Configuration.Discord.AutoResetTimestamp) {
+                OriginalStartTime = DateTimeOffset.Now;
+            }
+
+            if (Configuration.Discord.DisplayTimestamp) {
+                activity.Timestamps.StartTime = OriginalStartTime;
+            }
+
             if (hasSolution && Configuration.Discord.DisplaySolution) {
                 activity.State = i11n("base_solution_text", solution);
             }
