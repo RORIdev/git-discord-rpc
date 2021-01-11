@@ -1,222 +1,44 @@
 {
-    "assets": [
-        {
-            "key": "default_file",
-            "text": "@base_unknown_file_text",
-            "is_default": true
-        },
-        {
-            "key": "file_type_asp",
-            "text": "ASP/ASP.NET Server Pages",
-            "extensions": [
-                "asp"
-            ]
-        },
-        {
-            "key": "file_type_aspx",
-            "text": "ASP/ASP.NET Server Pages",
-            "extensions": [
-                "aspx"
-            ]
-        },
-        {
-            "key": "file_type_bat",
-            "text": "Windows/Unix Command Script File",
-            "extensions": [
-                "bat",
-                "cmd",
-                "com",
-                "sh"
-            ]
-        },
-        {
-            "key": "file_type_cpp",
-            "text": "C/C++ Source File",
-            "extensions": [
-                "cpp",
-                "c",
-                "cc",
-                "c",
-                "cxx",
-                "ino"
-            ]
-        },
-        {
-            "key": "file_type_cppheader",
-            "text": "C/C++ Header File",
-            "extensions": [
-                "h",
-                "hpp",
-                "hh",
-                "hxx"
-            ]
-        },
-        {
-            "key": "file_type_csharp",
-            "text": "C# Source File",
-            "extensions": [
-                "cs",
-                "cake"
-            ]
-        },
-        {
-            "key": "file_type_csproj",
-            "text": "C# Project File",
-            "extensions": [
-                "csproj"
-            ]
-        },
-        {
-            "key": "file_type_fsharp2",
-            "text": "F# Source File",
-            "extensions": [
-                "fs",
-                "fsx",
-                "fsi",
-                "fsscript"
-            ]
-        },
-        {
-            "key": "file_type_html",
-            "text": "HTML File",
-            "extensions": [
-                "html",
-                "htm",
-                "hta"
-            ]
-        },
-        {
-            "key": "file_type_js",
-            "text": "Javascript File",
-            "extensions": [
-                "js",
-                "jsx",
-                "jsm"
-            ]
-        },
-        {
-            "key": "file_type_json_official",
-            "text": "JSON File",
-            "extensions": [
-                "json"
-            ]
-        },
-        {
-            "key": "file_type_light_config",
-            "text": "Settings File",
-            "extensions": [
-                "settings",
-                "cfg",
-                "inf",
-                "ini",
-                "properties"
-            ]
-        },
-        {
-            "key": "file_type_njsproj",
-            "text": "NodeJS Project",
-            "extensions": [
-                "njsproj"
-            ]
-        },
-        {
-            "key": "file_type_php3",
-            "text": "PHP Source File",
-            "extensions": [
-                "php",
-                "php3",
-                "php4",
-                "php5",
-                "phps",
-                "phpt",
-                "phtml"
-            ]
-        },
-        {
-            "key": "file_type_python",
-            "text": "Python File",
-            "extensions": [
-                "py",
-                "py3",
-                "pyw"
-            ]
-        },
-        {
-            "key": "file_type_sln",
-            "text": "Visual Studio Solution File",
-            "extensions": [
-                "sln"
-            ]
-        },
-        {
-            "key": "file_type_sql",
-            "text": "SQL File",
-            "extensions": [
-                "sql"
-            ]
-        },
-        {
-            "key": "file_type_text",
-            "text": "Text File",
-            "extensions": [
-                "txt",
-                "log"
-            ]
-        },
-        {
-            "key": "file_type_typescript",
-            "text": "TypeScript File",
-            "extensions": [
-                "ts",
-                "tsx"
-            ]
-        },
-        {
-            "key": "file_type_vb",
-            "text": "VB Source File",
-            "extensions": [
-                "vb"
-            ]
-        },
-        {
-            "key": "file_type_vb",
-            "text": "VB Script File",
-            "extensions": [
-                "vbs"
-            ]
-        },
-        {
-            "key": "file_type_vbproj",
-            "text": "VB Project File",
-            "extensions": [
-                "vbproj"
-            ]
-        },
-        {
-            "key": "file_type_vcxproj",
-            "text": "C/C++ Project File",
-            "extensions": [
-                "vcxproj",
-                "vcproj"
-            ]
-        },
-        {
-            "key": "file_type_xml",
-            "text": "XML File",
-            "extensions": [
-                "xml",
-                "xsl",
-                "xstl",
-                "xsd"
-            ]
-        },
-        {
-            "key": "file_type_yaml",
-            "text": "YAML File",
-            "extensions": [
-                "yaml",
-                "yml"
-            ]
-        }
-    ]
+  "assets": [
+    {
+      "key": "default_file",
+      "text": "#base_unknown_file_text",
+      "is_default": true
+    },
+    {
+      "key": "file_type_bat",
+      "text": "Windows/Unix Command Script File",
+      "extensions": [
+        "bat",
+        "cmd",
+        "com",
+        "sh"
+      ]
+    },
+    {
+      "key": "file_type_cpp",
+      "text": "C/C++ File",
+      "extensions": [
+        "cpp",
+        "c",
+        "cc",
+        "c",
+        "cxx",
+        "ino",
+        "h",
+        "hpp",
+        "hh",
+        "hxx"
+
+      ]
+    },
+    {
+      "key": "file_type_csharp",
+      "text": "C# Source File",
+      "extensions": [
+        "cs",
+        "cake"
+      ]
+    }
+  ]
 }

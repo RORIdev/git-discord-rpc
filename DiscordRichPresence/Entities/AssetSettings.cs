@@ -22,14 +22,14 @@ namespace DiscordRichPresence.Entities
         {
             get
             {
-                lock (this.Assets)
+                lock (Assets)
                 {
-                    var index = this.Assets.FindIndex(x => x.IsDefault);
+                    var index = Assets.FindIndex(x => x.IsDefault);
 
                     if (index == -1)
                         return null;
 
-                    return this.Assets[index];
+                    return Assets[index];
                 }
             }
         }
@@ -43,14 +43,14 @@ namespace DiscordRichPresence.Entities
         {
             asset = null;
 
-            lock (this.Assets)
+            lock (Assets)
             {
-                var index = this.Assets.FindIndex(x => x.SupportExtension(extension));
+                var index = Assets.FindIndex(x => x.SupportExtension(extension));
 
                 if (index == -1)
                     return false;
 
-                asset = this.Assets[index];
+                asset = Assets[index];
                 return true;
             }
         }
@@ -67,14 +67,14 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(asset.Key))
                 return;
 
-            lock (this.Assets)
+            lock (Assets)
             {
-                var index = this.Assets.FindIndex(x => x.Key.Equals(asset.Key));
+                var index = Assets.FindIndex(x => x.Key.Equals(asset.Key));
 
                 if (index != -1)
-                    this.Assets.RemoveAt(index);
+                    Assets.RemoveAt(index);
 
-                this.Assets.Add(asset);
+                Assets.Add(asset);
             }
         }
 
@@ -90,14 +90,14 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(asset.Key))
                 return;
 
-            lock (this.Assets)
+            lock (Assets)
             {
-                var index = this.Assets.FindIndex(x => x.Key.Equals(asset.Key));
+                var index = Assets.FindIndex(x => x.Key.Equals(asset.Key));
 
                 if (index != -1)
                     return;
 
-                this.Assets.RemoveAt(index);
+                Assets.RemoveAt(index);
             }
         }
 
@@ -110,14 +110,14 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(key))
                 return;
 
-            lock (this.Assets)
+            lock (Assets)
             {
-                var index = this.Assets.FindIndex(x => x.Key.Equals(key));
+                var index = Assets.FindIndex(x => x.Key.Equals(key));
 
                 if (index != -1)
                     return;
 
-                this.Assets.RemoveAt(index);
+                Assets.RemoveAt(index);
             }
         }
     }

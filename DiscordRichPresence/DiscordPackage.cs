@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using DiscordRichPresence.Core;
+using DiscordRichPresence.Entities;
 using DiscordRichPresence.Pipe;
 using DiscordRichPresence.Pipe.Entities;
 using DiscordRichPresence.Pipe.EventArgs;
@@ -23,78 +24,79 @@ namespace DiscordRichPresence
     {
         public ConfigurationProvider Configuration { get; }
         public DiscordPipeClient Client { get; private set; }
-        public DiscordActivity LastActivity { get; private set; }
+        public DiscordActivity InitialActivity { get; private set; }
+
         public DTE DTE { get; private set; }
         public Events Events { get; private set; }
 
         public DiscordPackage()
         {
-            this.Configuration = new ConfigurationProvider();
+            Configuration = new ConfigurationProvider();
         }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await this.Configuration.InitializeAsync();
-            await this.SetupPipeAsync();
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await Configuration.InitializeAsync();
+            await SetupPipeAsync();
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            this.DTE = (await this.GetServiceAsync(typeof(DTE)).ConfigureAwait(false)) as DTE;
+            DTE = (await GetServiceAsync(typeof(DTE)).ConfigureAwait(false)) as DTE;
 
-            if (this.DTE != null)
+            if (DTE != null)
             {
-                this.Events = this.DTE.Events;
-                this.Events.WindowEvents.WindowActivated += this.HandleWindowActivated;
+                Events = DTE.Events;
+                Events.WindowEvents.WindowActivated += HandleWindowActivated;
             }
         }
 
         async Task HandleReadyAsync(ReadyEventArgs e)
         {
-            if (this.LastActivity == null)
+            if (InitialActivity == null)
             {
-                this.LastActivity = new DiscordActivity
+                InitialActivity = new DiscordActivity
                 {
                     Assets = new DiscordActivityAssets
                     {
-                        LargeImage = "visualstudio_small",
-                        LargeText = "Visual Studio"
+                        LargeImage = "gitrpc",
+                        LargeText = "roridev",
+                        SmallImage = "git",
+                        SmallText = "narcisism, yay!"
                     },
-                    Timestamps = new DiscordActivityTimestamps
-                    {
-                        StartTime = DateTimeOffset.Now
-                    }
+                    State = "Loading Visual Studio",
+                    Details = "Extension"
                 };
 
-                if (this.Configuration.Discord.DisplayTimestamp)
-                    this.LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = DateTimeOffset.Now };
+                if (Configuration.Discord.DisplayTimestamp)
+                    InitialActivity.Timestamps = new DiscordActivityTimestamps { StartTime = DateTimeOffset.Now };
             }
 
-            await this.Client.SetActivityAsync(this.LastActivity);
+            await Client.SetActivityAsync(InitialActivity);
         }
 
         async Task HandleDisconnectedAsync()
         {
             await Task.Delay(5000);
-            await this.SetupPipeAsync();
+            await SetupPipeAsync();
         }
 
         async Task SetupPipeAsync()
         {
-            if (this.Client != null)
+            if (Client != null)
             {
-                await this.Client.DisconnectAsync();
+                await Client.DisconnectAsync();
 
-                this.Client.Ready -= this.HandleReadyAsync;
-                this.Client.Disconnected -= this.HandleDisconnectedAsync;
-                this.Client = null;
+                Client.Ready -= HandleReadyAsync;
+                Client.Disconnected -= HandleDisconnectedAsync;
+                Client = null;
             }
 
-            this.Client = new DiscordPipeClient(this.Configuration.Discord.PipeInstanceId,
-                    this.Configuration.Discord.ApplicationId);
+            Client = new DiscordPipeClient(Configuration.Discord.PipeInstanceId,
+                    Configuration.Discord.ApplicationId);
 
-            this.Client.Ready += this.HandleReadyAsync;
-            this.Client.Disconnected += this.HandleDisconnectedAsync;
+            Client.Ready += HandleReadyAsync;
+            Client.Disconnected += HandleDisconnectedAsync;
 
-            await this.Client.ConnectAsync();
+            await Client.ConnectAsync();
         }
 
         DateTimeOffset OriginalStartTime = DateTimeOffset.MinValue;
@@ -108,10 +110,7 @@ namespace DiscordRichPresence
             {
                 try
                 {
-                    var fn = this.Configuration.Localization.GetFormatDelegate();
-
-                    if (this.LastActivity.Assets == null)
-                        this.LastActivity.Assets = new DiscordActivityAssets();
+                    var i11n = Configuration.Localization.GetFormatDelegate();
 
                     if (window?.Project == null && old?.Project == null)
                         return;
@@ -119,104 +118,93 @@ namespace DiscordRichPresence
                     if (window?.Project == null && old?.Project != null)
                         window = old;
 
-                    if (!this.Configuration.Discord.DisplayTimestamp)
-                        this.LastActivity.Timestamps = null;
-                    else
-                    {
-                        if (this.LastActivity.Timestamps == null)
-                            this.LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = this.OriginalStartTime };
+                    var activity = GetNextActivity(window, i11n);
 
-                        if (this.Configuration.Discord.AutoResetTimestamp)
-                            this.LastActivity.Timestamps.StartTime = DateTimeOffset.Now;
-                    }
-
-                    if (!this.Configuration.Discord.DisplayProject)
-                        this.LastActivity.State = null;
-                    else
-                    {
-                        if (this.TryGetProjectName(window, out var project_name))
-                            this.LastActivity.State = fn("base_working_text", project_name);
-                        else
-                            this.LastActivity.State = null;
-                    }
-
-                    if (!this.Configuration.Discord.DisplaySolution)
-                    {
-                        this.LastActivity.Assets.SmallImage = null;
-                        this.LastActivity.Assets.SmallText = null;
-                    }
-                    else
-                    {
-                        if (this.DTE.Solution != null)
-                        {
-                            if (!string.IsNullOrEmpty(this.DTE.Solution.FullName))
-                            {
-                                try
-                                {
-                                    var file = new FileInfo(this.DTE.Solution.FullName);
-                                    this.LastActivity.Assets.SmallText = fn("base_solution_text", Path.GetFileNameWithoutExtension(file.Name));
-                                    this.LastActivity.Assets.SmallImage = "visualstudio_small";
-                                }
-                                catch
-                                {
-                                    this.LastActivity.Assets.SmallImage = null;
-                                    this.LastActivity.Assets.SmallText = null;
-                                }
-                            }
-                        }
-                    }
-
-                    if (this.TryGetFileName(window, out var file_name, out var ext))
-                    {
-                        this.LastActivity.Details = fn("base_editing_text", file_name);
-
-                        if (this.Configuration.Assets.FindAsset(ext, out var asset))
-                        {
-                            var text = string.Empty;
-                            var localized_key = asset.Text.StartsWith("@") ? asset.Text.Substring(1) : null;
-
-                            if (!string.IsNullOrEmpty(localized_key))
-                                text = fn(localized_key);
-                            else
-                                text = asset.Text;
-
-                            this.LastActivity.Assets.LargeImage = asset.Key;
-                            this.LastActivity.Assets.LargeText = text;
-                        }
-                        else
-                        {
-                            asset = this.Configuration.Assets.DefaultAsset;
-
-                            if (asset == null)
-                            {
-                                this.LastActivity.Assets.LargeImage = "visualstudio_small";
-                                this.LastActivity.Assets.LargeText = "Visual Studio";
-                            }
-                            else
-                            {
-                                this.LastActivity.Assets.LargeImage = asset.Key;
-
-                                if (asset.Key == "default_file")
-                                    this.LastActivity.Assets.LargeText = fn("base_unknown_file_text");
-                                else
-                                    this.LastActivity.Assets.LargeText = asset.Text;
-                            }
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(this.LastActivity.Assets.LargeImage)
-                        && string.IsNullOrEmpty(this.LastActivity.Assets.LargeText)
-                        && string.IsNullOrEmpty(this.LastActivity.Assets.SmallImage)
-                        && string.IsNullOrEmpty(this.LastActivity.Assets.SmallText))
-                        this.LastActivity.Assets = null;
-
-                    await this.Client.SetActivityAsync(this.LastActivity).ConfigureAwait(false);
+                    await Client.SetActivityAsync(activity).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine("\n\nSET ACTIVITY ERROR: {0}\n\n", args: ex);
                 }
             });
+        }
+
+        DiscordActivity GetNextActivity(Window window , GetStringFormatDelegate i11n) {
+
+            var activity = new DiscordActivity {
+                Timestamps = new DiscordActivityTimestamps(),
+                Assets = new DiscordActivityAssets()
+            };
+
+            var hasProject = TryGetProjectName(window, out var project);
+            var hasFile = TryGetFileName(window, out var file, out var extension);
+            var hasSolution = TryGetSolutionName(out var solution);
+
+            if (hasProject && Configuration.Discord.DisplayProject) {
+                activity.State = i11n("base_working_text", project);
+            }
+
+            if (Configuration.Discord.AutoResetTimestamp) {
+                OriginalStartTime = DateTimeOffset.Now;
+            }
+
+            if (Configuration.Discord.DisplayTimestamp) {
+                activity.Timestamps.StartTime = OriginalStartTime;
+            }
+
+            if (hasSolution && Configuration.Discord.DisplaySolution) {
+                activity.State = i11n("base_solution_text", solution);
+            }
+
+            if (hasFile) {
+                activity.Details = i11n("base_editing_text", file);
+                var asset = GetAssetFromFileExtension(extension);
+                activity.Assets.LargeImage = asset.Key;
+                activity.Assets.LargeText = GetAssetName(asset, i11n);
+            }
+
+            return activity;
+        }
+
+        Asset GetAssetFromFileExtension(string extension) {
+            var assetFound = Configuration.Assets.FindAsset(extension, out var asset);
+
+            if (assetFound) {
+                return asset;
+            }
+
+            return Configuration.Assets.DefaultAsset;
+        }
+
+        string GetAssetName(Asset asset, GetStringFormatDelegate i11n) {
+            if (IsLocalizedAsset(asset)) {
+                return i11n(asset.Text.Substring(1));
+            }
+
+            return asset.Text;
+        }
+
+        bool IsLocalizedAsset(Asset asset)
+            => asset.Text.StartsWith("@");
+
+
+        bool TryGetSolutionName(out string name) {
+            name = "";
+            if (DTE.Solution == null)
+                return false;
+
+            var solutionFile = DTE.Solution.FullName;
+
+            if (string.IsNullOrEmpty(solutionFile))
+                return false;
+
+            try {
+                var file = new FileInfo(solutionFile);
+                name = Path.GetFileNameWithoutExtension(file.Name);
+                return true;
+            } catch {
+                return false;
+            }
         }
 
         bool TryGetProjectName(Window window, out string name)
