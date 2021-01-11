@@ -1,12 +1,14 @@
-# Discord Rich Precense for VS
-Displays what file you're working in visual studio in discord. - [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=StormDevelopmentSoftware.discordrichpresence)
+# gitRPC for VS
+Displays what file you're working in visual studio in discord and the current git branch. - [VS Marketplace](http://marketplace.visualstudio.com/items?itemName=gitrpc.gitrpc)
 
 # Example
 
-<img src="https://i.imgur.com/8o64D24.png" alt="discord rich presence example image"></img>
+![Example Discord Precense](https://i.imgur.com/DxJTWOW.gif)
 
 # Features
 - Display current file that you are editing.
+- ***Display current git `branch`***
+- ***Interop with StormDevelopment/DiscordRichPresense***
 - Display elapsed time since visual studio is open.
 - Capability to enable/disable time.
 - Capability to enable/disable project name that you are working.
@@ -16,7 +18,6 @@ Displays what file you're working in visual studio in discord. - [VS Marketplace
 - Capability to use custom discord application id.
 - Capability to use custom assets and texts.
 - Capability to use different clients (if you have more that one discord running)
-- Bunch of languages supported (using default application id)
 - Full .NET discord rich presence implementation (See above)
 
 # Configuration
@@ -25,7 +26,7 @@ By default configuration have standard values for an discord application with de
 
 - discord.json: Discord rich presence related settings and capabilities settings.
 - assets.json: Assets related settings, list of assets with list of file extensions supported by asset.
-- localization.json: Localization related settings, list of localized string (per user localizable). For assets localization put hash (#) in start of `"text": "#my_localizaiton_key"`
+- localization.json: Localization related settings, list of localized string (per user localizable). For assets localization put at (@) in start of `"text": "@my_localizaiton_key"`
 <br/>
 
 # Contributing
@@ -34,3 +35,5 @@ By default configuration have standard values for an discord application with de
 
 # Notes
 Thanks for [DSharpPlus/DotNetRPC](https://github.com/DSharpPlus/DotnetRPC/) for provide .NET DiscordRpc implementation, i extracted code part from that and used in this extension.
+
+Thanks for [StormDevelopment/DiscordRichPresense](https://github.com/StormDevelopment/DiscordRichPresense) for serving as a base for this extension,
