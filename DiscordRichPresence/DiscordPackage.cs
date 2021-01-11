@@ -29,29 +29,29 @@ namespace DiscordRichPresence
 
         public DiscordPackage()
         {
-            this.Configuration = new ConfigurationProvider();
+            Configuration = new ConfigurationProvider();
         }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await this.Configuration.InitializeAsync();
-            await this.SetupPipeAsync();
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await Configuration.InitializeAsync();
+            await SetupPipeAsync();
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            this.DTE = (await this.GetServiceAsync(typeof(DTE)).ConfigureAwait(false)) as DTE;
+            DTE = (await GetServiceAsync(typeof(DTE)).ConfigureAwait(false)) as DTE;
 
-            if (this.DTE != null)
+            if (DTE != null)
             {
-                this.Events = this.DTE.Events;
-                this.Events.WindowEvents.WindowActivated += this.HandleWindowActivated;
+                Events = DTE.Events;
+                Events.WindowEvents.WindowActivated += HandleWindowActivated;
             }
         }
 
         async Task HandleReadyAsync(ReadyEventArgs e)
         {
-            if (this.LastActivity == null)
+            if (LastActivity == null)
             {
-                this.LastActivity = new DiscordActivity
+                LastActivity = new DiscordActivity
                 {
                     Assets = new DiscordActivityAssets
                     {
@@ -64,37 +64,37 @@ namespace DiscordRichPresence
                     }
                 };
 
-                if (this.Configuration.Discord.DisplayTimestamp)
-                    this.LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = DateTimeOffset.Now };
+                if (Configuration.Discord.DisplayTimestamp)
+                    LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = DateTimeOffset.Now };
             }
 
-            await this.Client.SetActivityAsync(this.LastActivity);
+            await Client.SetActivityAsync(LastActivity);
         }
 
         async Task HandleDisconnectedAsync()
         {
             await Task.Delay(5000);
-            await this.SetupPipeAsync();
+            await SetupPipeAsync();
         }
 
         async Task SetupPipeAsync()
         {
-            if (this.Client != null)
+            if (Client != null)
             {
-                await this.Client.DisconnectAsync();
+                await Client.DisconnectAsync();
 
-                this.Client.Ready -= this.HandleReadyAsync;
-                this.Client.Disconnected -= this.HandleDisconnectedAsync;
-                this.Client = null;
+                Client.Ready -= HandleReadyAsync;
+                Client.Disconnected -= HandleDisconnectedAsync;
+                Client = null;
             }
 
-            this.Client = new DiscordPipeClient(this.Configuration.Discord.PipeInstanceId,
-                    this.Configuration.Discord.ApplicationId);
+            Client = new DiscordPipeClient(Configuration.Discord.PipeInstanceId,
+                    Configuration.Discord.ApplicationId);
 
-            this.Client.Ready += this.HandleReadyAsync;
-            this.Client.Disconnected += this.HandleDisconnectedAsync;
+            Client.Ready += HandleReadyAsync;
+            Client.Disconnected += HandleDisconnectedAsync;
 
-            await this.Client.ConnectAsync();
+            await Client.ConnectAsync();
         }
 
         DateTimeOffset OriginalStartTime = DateTimeOffset.MinValue;
@@ -108,10 +108,10 @@ namespace DiscordRichPresence
             {
                 try
                 {
-                    var fn = this.Configuration.Localization.GetFormatDelegate();
+                    var i11n = Configuration.Localization.GetFormatDelegate();
 
-                    if (this.LastActivity.Assets == null)
-                        this.LastActivity.Assets = new DiscordActivityAssets();
+                    if (LastActivity.Assets == null)
+                        LastActivity.Assets = new DiscordActivityAssets();
 
                     if (window?.Project == null && old?.Project == null)
                         return;
@@ -119,98 +119,97 @@ namespace DiscordRichPresence
                     if (window?.Project == null && old?.Project != null)
                         window = old;
 
-                    if (!this.Configuration.Discord.DisplayTimestamp)
-                        this.LastActivity.Timestamps = null;
-                    else
-                    {
-                        if (this.LastActivity.Timestamps == null)
-                            this.LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = this.OriginalStartTime };
+                    if (!Configuration.Discord.DisplayTimestamp) {
+                        LastActivity.Timestamps = null;
+                    } else {
+                        if (LastActivity.Timestamps == null)
+                            LastActivity.Timestamps = new DiscordActivityTimestamps { StartTime = OriginalStartTime };
 
-                        if (this.Configuration.Discord.AutoResetTimestamp)
-                            this.LastActivity.Timestamps.StartTime = DateTimeOffset.Now;
+                        if (Configuration.Discord.AutoResetTimestamp)
+                            LastActivity.Timestamps.StartTime = DateTimeOffset.Now;
                     }
 
-                    if (!this.Configuration.Discord.DisplayProject)
-                        this.LastActivity.State = null;
+                    if (!Configuration.Discord.DisplayProject)
+                        LastActivity.State = null;
                     else
                     {
-                        if (this.TryGetProjectName(window, out var project_name))
-                            this.LastActivity.State = fn("base_working_text", project_name);
+                        if (TryGetProjectName(window, out var project_name))
+                            LastActivity.State = i11n("base_working_text", project_name);
                         else
-                            this.LastActivity.State = null;
+                            LastActivity.State = null;
                     }
 
-                    if (!this.Configuration.Discord.DisplaySolution)
+                    if (!Configuration.Discord.DisplaySolution)
                     {
-                        this.LastActivity.Assets.SmallImage = null;
-                        this.LastActivity.Assets.SmallText = null;
+                        LastActivity.Assets.SmallImage = null;
+                        LastActivity.Assets.SmallText = null;
                     }
                     else
                     {
-                        if (this.DTE.Solution != null)
+                        if (DTE.Solution != null)
                         {
-                            if (!string.IsNullOrEmpty(this.DTE.Solution.FullName))
+                            if (!string.IsNullOrEmpty(DTE.Solution.FullName))
                             {
                                 try
                                 {
-                                    var file = new FileInfo(this.DTE.Solution.FullName);
-                                    this.LastActivity.Assets.SmallText = fn("base_solution_text", Path.GetFileNameWithoutExtension(file.Name));
-                                    this.LastActivity.Assets.SmallImage = "visualstudio_small";
+                                    var file = new FileInfo(DTE.Solution.FullName);
+                                    LastActivity.Assets.SmallText = i11n("base_solution_text", Path.GetFileNameWithoutExtension(file.Name));
+                                    LastActivity.Assets.SmallImage = "visualstudio_small";
                                 }
                                 catch
                                 {
-                                    this.LastActivity.Assets.SmallImage = null;
-                                    this.LastActivity.Assets.SmallText = null;
+                                    LastActivity.Assets.SmallImage = null;
+                                    LastActivity.Assets.SmallText = null;
                                 }
                             }
                         }
                     }
 
-                    if (this.TryGetFileName(window, out var file_name, out var ext))
+                    if (TryGetFileName(window, out var file_name, out var ext))
                     {
-                        this.LastActivity.Details = fn("base_editing_text", file_name);
+                        LastActivity.Details = i11n("base_editing_text", file_name);
 
-                        if (this.Configuration.Assets.FindAsset(ext, out var asset))
+                        if (Configuration.Assets.FindAsset(ext, out var asset))
                         {
                             var text = string.Empty;
                             var localized_key = asset.Text.StartsWith("@") ? asset.Text.Substring(1) : null;
 
                             if (!string.IsNullOrEmpty(localized_key))
-                                text = fn(localized_key);
+                                text = i11n(localized_key);
                             else
                                 text = asset.Text;
 
-                            this.LastActivity.Assets.LargeImage = asset.Key;
-                            this.LastActivity.Assets.LargeText = text;
+                            LastActivity.Assets.LargeImage = asset.Key;
+                            LastActivity.Assets.LargeText = text;
                         }
                         else
                         {
-                            asset = this.Configuration.Assets.DefaultAsset;
+                            asset = Configuration.Assets.DefaultAsset;
 
                             if (asset == null)
                             {
-                                this.LastActivity.Assets.LargeImage = "visualstudio_small";
-                                this.LastActivity.Assets.LargeText = "Visual Studio";
+                                LastActivity.Assets.LargeImage = "visualstudio_small";
+                                LastActivity.Assets.LargeText = "Visual Studio";
                             }
                             else
                             {
-                                this.LastActivity.Assets.LargeImage = asset.Key;
+                                LastActivity.Assets.LargeImage = asset.Key;
 
                                 if (asset.Key == "default_file")
-                                    this.LastActivity.Assets.LargeText = fn("base_unknown_file_text");
+                                    LastActivity.Assets.LargeText = i11n("base_unknown_file_text");
                                 else
-                                    this.LastActivity.Assets.LargeText = asset.Text;
+                                    LastActivity.Assets.LargeText = asset.Text;
                             }
                         }
                     }
 
-                    if (string.IsNullOrEmpty(this.LastActivity.Assets.LargeImage)
-                        && string.IsNullOrEmpty(this.LastActivity.Assets.LargeText)
-                        && string.IsNullOrEmpty(this.LastActivity.Assets.SmallImage)
-                        && string.IsNullOrEmpty(this.LastActivity.Assets.SmallText))
-                        this.LastActivity.Assets = null;
+                    if (string.IsNullOrEmpty(LastActivity.Assets.LargeImage)
+                        && string.IsNullOrEmpty(LastActivity.Assets.LargeText)
+                        && string.IsNullOrEmpty(LastActivity.Assets.SmallImage)
+                        && string.IsNullOrEmpty(LastActivity.Assets.SmallText))
+                        LastActivity.Assets = null;
 
-                    await this.Client.SetActivityAsync(this.LastActivity).ConfigureAwait(false);
+                    await Client.SetActivityAsync(LastActivity).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

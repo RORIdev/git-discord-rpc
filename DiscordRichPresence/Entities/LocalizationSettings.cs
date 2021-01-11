@@ -26,7 +26,7 @@ namespace DiscordRichPresence.Entities
         {
             return new GetStringFormatDelegate((key, args) =>
             {
-                if (!this.FindString(key, out var str))
+                if (!FindString(key, out var str))
                     return key;
 
                 return str.Format(args);
@@ -40,14 +40,14 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(key))
                 return false;
 
-            lock (this.Data)
+            lock (Data)
             {
-                var index = this.Data.FindIndex(x => x.Key.ToLowerInvariant() == key.ToLowerInvariant());
+                var index = Data.FindIndex(x => x.Key.ToLowerInvariant() == key.ToLowerInvariant());
 
                 if (index == -1)
                     return false;
 
-                value = this.Data[index];
+                value = Data[index];
                 return true;
             }
         }
@@ -57,16 +57,16 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
                 return false;
 
-            lock (this.Data)
+            lock (Data)
             {
-                var index = this.Data.FindIndex(x => x.Key.ToLowerInvariant() == key.ToLowerInvariant());
+                var index = Data.FindIndex(x => x.Key.ToLowerInvariant() == key.ToLowerInvariant());
 
                 if (index == -1)
-                    this.Data.Add(new LocalizationEntry { Key = key, Text = value });
+                    Data.Add(new LocalizationEntry { Key = key, Text = value });
                 else
                 {
-                    this.Data.RemoveAt(index);
-                    this.Data.Insert(index, new LocalizationEntry { Key = key, Text = value });
+                    Data.RemoveAt(index);
+                    Data.Insert(index, new LocalizationEntry { Key = key, Text = value });
                 }
 
                 return true;
@@ -78,14 +78,14 @@ namespace DiscordRichPresence.Entities
             if (string.IsNullOrEmpty(key))
                 return false;
 
-            lock (this.Data)
+            lock (Data)
             {
-                var index = this.Data.FindIndex(x => x.Key.ToLowerInvariant() == key.ToLowerInvariant());
+                var index = Data.FindIndex(x => x.Key.ToLowerInvariant() == key.ToLowerInvariant());
 
                 if (index == -1)
                     return false;
 
-                this.Data.RemoveAt(index);
+                Data.RemoveAt(index);
                 return true;
             }
         }
