@@ -261,6 +261,26 @@ namespace DiscordRichPresence
         bool IsLocalizedAsset(Asset asset)
             => asset.Text.StartsWith("@");
 
+
+        bool TryGetSolutionName(out string name) {
+            name = "";
+            if (DTE.Solution == null)
+                return false;
+
+            var solutionFile = DTE.Solution.FullName;
+
+            if (string.IsNullOrEmpty(solutionFile))
+                return false;
+
+            try {
+                var file = new FileInfo(solutionFile);
+                name = Path.GetFileNameWithoutExtension(file.Name);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
         bool TryGetProjectName(Window window, out string name)
         {
             name = null;
