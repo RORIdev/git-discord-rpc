@@ -111,9 +111,6 @@ namespace DiscordRichPresence
                 {
                     var i11n = Configuration.Localization.GetFormatDelegate();
 
-                    if (LastActivity.Assets == null)
-                        LastActivity.Assets = new DiscordActivityAssets();
-
                     if (window?.Project == null && old?.Project == null)
                         return;
 
