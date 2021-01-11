@@ -8,6 +8,7 @@ namespace DiscordRichPresence
         public static DirectoryInfo GetGitDirectory(string CurrentPath) {
             var di = new DirectoryInfo(CurrentPath);
             if (di.GetDirectories().Any(x => x.Name == ".git")) return di;
+            if (!di.Parent.Exists) return null;
             else return GetGitDirectory(di.Parent.FullName);
         }
     }
