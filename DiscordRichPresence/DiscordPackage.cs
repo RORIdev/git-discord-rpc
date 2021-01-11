@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using DiscordRichPresence.Core;
+using DiscordRichPresence.Entities;
 using DiscordRichPresence.Pipe;
 using DiscordRichPresence.Pipe.Entities;
 using DiscordRichPresence.Pipe.EventArgs;
@@ -217,6 +218,48 @@ namespace DiscordRichPresence
                 }
             });
         }
+
+        DiscordActivity GetNextActivity(Window window , GetStringFormatDelegate i11n) {
+
+            var activity = new DiscordActivity();
+
+            var hasProject = TryGetProjectName(window, out var project);
+            var hasFile = TryGetFileName(window, out var file, out var extension);
+
+            if (hasProject) {
+                activity.State = i11n("base_working_text", project);
+            }
+
+            if (hasFile) {
+                LastActivity.Details = i11n("base_editing_text", file);
+                var asset = GetAssetFromFileExtension(extension);
+                activity.Assets.LargeImage = asset.Key;
+                activity.Assets.LargeText = GetAssetName(asset, i11n);
+            }
+
+            return activity;
+        }
+
+        Asset GetAssetFromFileExtension(string extension) {
+            var assetFound = Configuration.Assets.FindAsset(extension, out var asset);
+
+            if (assetFound) {
+                return asset;
+            }
+
+            return Configuration.Assets.DefaultAsset;
+        }
+
+        string GetAssetName(Asset asset, GetStringFormatDelegate i11n) {
+            if (IsLocalizedAsset(asset)) {
+                return i11n(asset.Text.Substring(1));
+            }
+
+            return asset.Text;
+        }
+
+        bool IsLocalizedAsset(Asset asset)
+            => asset.Text.StartsWith("@");
 
         bool TryGetProjectName(Window window, out string name)
         {
