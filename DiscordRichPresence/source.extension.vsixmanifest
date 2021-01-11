@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="DiscordRichPresence.49f53cf2-2137-43c1-8080-3b873aa40684" Version="1.4" Language="en-US" Publisher="Storm Development Software" />
-        <DisplayName>Discord Rich Presence</DisplayName>
-        <Description xml:space="preserve">Displays what file you're working in visual studio in discord.</Description>
-        <MoreInfo>https://github.com/StormDevelopmentSoftware/DiscordRichPresence</MoreInfo>
-        <Icon>Resources\Discord_Logo_Color.png</Icon>
-        <PreviewImage>Resources\Discord_Logo_Color.png</PreviewImage>
-        <Tags>development, discord, discord rich presence, discord rpc, discordrichpresence, discord-rich-presence, discordrich, discord-rich, discordrpc, discord-rpc, rpc, visual studio discord, visual studio rich presence</Tags>
+        <Identity Id="gitRPC" Version="1.0" Language="en-US" Publisher="gitRPC" />
+        <DisplayName>gitRPC</DisplayName>
+        <Description xml:space="preserve">Displays what file you're working in visual studio in discord. Displays current git branch if a git repo is found.</Description>
+        <MoreInfo>https://github.com/RORIdev/git-discord-rpc</MoreInfo>
+        <Icon>Resources\gitrpc.png</Icon>
+        <PreviewImage>Resources\gitrpc.png</PreviewImage>
+        <Tags>development, discord, discord rich presence, discord rpc, discordrichpresence, discord-rich-presence, discordrich, discord-rich, discordrpc, discord-rpc, rpc, visual studio discord, visual studio rich presence,git</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,)" />
