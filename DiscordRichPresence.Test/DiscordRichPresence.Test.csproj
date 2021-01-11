@@ -50,9 +50,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DiscordRichPresence\DiscordRichPresence.csproj">
+    <ProjectReference Include="..\DiscordRichPresence\gitRPC.csproj">
       <Project>{0469c2ec-117e-4d16-b6d8-487ace8a715e}</Project>
-      <Name>DiscordRichPresence</Name>
+      <Name>gitRPC</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
