@@ -26,6 +26,10 @@ namespace DiscordRichPresence
         public DiscordPipeClient Client { get; private set; }
         public DiscordActivity InitialActivity { get; private set; }
 
+        internal DirectoryInfo gitDirectory { get; set; }
+        internal bool FLAG_SEARCHGIT = false;
+
+
         public DTE DTE { get; private set; }
         public Events Events { get; private set; }
 
@@ -139,6 +143,12 @@ namespace DiscordRichPresence
             var hasProject = TryGetProjectName(window, out var project);
             var hasFile = TryGetFileName(window, out var file, out var extension);
             var hasSolution = TryGetSolutionName(out var solution);
+            var hasSolutionDir = TryGetSolutionDirectory(out string solutionDir);
+
+            if (!FLAG_SEARCHGIT && hasSolutionDir) {
+                gitDirectory = Utilities.GetGitDirectory(solutionDir);
+                FLAG_SEARCHGIT = true;
+            }
 
             if (hasProject && Configuration.Discord.DisplayProject) {
                 activity.State = i11n("base_working_text", project);
@@ -156,6 +166,16 @@ namespace DiscordRichPresence
                 activity.State = i11n("base_solution_text", solution);
             }
 
+            if (gitDirectory == null) {
+                activity.Assets.SmallImage = "gitrpc";
+                activity.Assets.SmallText = "No git? what a shame.";
+            }
+
+            if (gitDirectory != null) {
+                activity.Assets.SmallImage = "git";
+                activity.Assets.SmallText = GetCurrentBranch(gitDirectory);
+            }
+
             if (hasFile) {
                 activity.Details = i11n("base_editing_text", file);
                 var asset = GetAssetFromFileExtension(extension);
@@ -164,6 +184,23 @@ namespace DiscordRichPresence
             }
 
             return activity;
+        }
+
+        private string GetCurrentBranch(DirectoryInfo gitDirectory) {
+            var gitProc = new System.Diagnostics.Process {
+                StartInfo = new System.Diagnostics.ProcessStartInfo {
+                    FileName = "git.exe",
+                    Arguments = "rev-parse --abbrev-ref HEAD",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    WorkingDirectory = gitDirectory.FullName
+                },
+            };
+            gitProc.Start();
+            var branch = gitProc.StandardOutput.ReadToEnd();
+            gitProc.WaitForExit();
+            return branch;
         }
 
         Asset GetAssetFromFileExtension(string extension) {
@@ -201,6 +238,25 @@ namespace DiscordRichPresence
             try {
                 var file = new FileInfo(solutionFile);
                 name = Path.GetFileNameWithoutExtension(file.Name);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        private bool TryGetSolutionDirectory(out string solutionDir) {
+            solutionDir = "";
+            if (DTE.Solution == null)
+                return false;
+
+            var solutionFile = DTE.Solution.FullName;
+
+            if (string.IsNullOrEmpty(solutionFile))
+                return false;
+
+            try {
+                var file = new FileInfo(solutionFile);
+                solutionDir = file.Directory.FullName;
                 return true;
             } catch {
                 return false;
